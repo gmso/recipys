@@ -1,6 +1,6 @@
-[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml)
-[![codecov](https://codecov.io/gh/gmso/recipys/branch/master/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys)
-[![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml)
+Tests | Code coverage | PyPI package CD | Latest version
+:----: | :----: | :----: | :----: | 
+[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml) | [![codecov](https://codecov.io/gh/gmso/recipys/branch/master/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys) | [![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml) | TBD
 
 
 # 🍲 Recipys 🍲
