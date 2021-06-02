@@ -1,8 +1,13 @@
+[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml)
+[![codecov](https://codecov.io/gh/gmso/recipys/branch/master/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys)
+[![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml)
+
+
 # 🍲 Recipys 🍲
 Get recipe ideas directly from your CLI. Use meal type and/or ingredients to narrow your search.
 
 ## Details
-This app will provide you with a recipe scraped from the web. The recipe is presented in a table format with ingredients and steps. If you are struggling to find ideas for your next meal or want to know what you can do with the ingredients you have at home, give *recipys* a try.
+This app will provide you with a recipe scraped from the web. The recipe is presented in a table format with ingredients and steps. If you are struggling to find ideas for your next meal or want to know what you can do with the ingredients you have at home, give **recipys** a try.
 
 ## Installation
 The tool is available as a `pip` package. Download it with the following command:
