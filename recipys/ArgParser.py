@@ -1,4 +1,5 @@
-from typing import List, Tuple, AbstractSet
+import re
+from typing import List, Tuple, AbstractSet, Optional
 
 
 class ArgParser():
@@ -18,21 +19,21 @@ class ArgParser():
             "breakfast", "lunch", "dinner", "dessert"}
         self.args: List[str] = args
 
-    def parse(self) -> Tuple[str, List[str]]:
+    def parse(self) -> Tuple[Optional[str], Optional[List[str]]]:
         """
         Parses command line arguments
 
         Returns:
             Tuple with:
                 - str: meal name (default: None)
-                - List[str]: list of ingredients (default: None)
+                - List[str]: list of ingredients (default: List[None])
         """
 
         self.meal: str = self._get_meal()
         self.ingredients: List[str] = self._get_ingredients()
         return (self.meal, self.ingredients)
 
-    def _get_meal(self) -> str:
+    def _get_meal(self) -> Optional[str]:
         """
         Gets meal type from command line argument
 
@@ -45,11 +46,29 @@ class ArgParser():
                     return accepted_meal
         return None
 
-    def _get_ingredients(self) -> List[str]:
+    def _get_ingredients(self) -> Optional[List[str]]:
         """
         Gets meal type from command line argument
 
         Returns:
-            - str: meal name (default: None)
+            - List[str]: list of valid ingredients (default: None)
         """
-        pass
+        if "with" not in self.args:
+            return None
+        
+        start: int = 2 if self.meal else 1
+
+        if "with" is not self.args[start]:
+            return None
+
+        ingredients: List[str] = []
+        for _, arg in enumerate(self.args[start+1::]):
+            m = re.findall(r"\w",arg)
+            word = "".join(m)
+            if word:
+                ingredients.append(word)
+
+        if not ingredients:
+            return None
+            
+        return ingredients
