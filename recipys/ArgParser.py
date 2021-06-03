@@ -55,20 +55,20 @@ class ArgParser():
         """
         if "with" not in self.args:
             return None
-        
+
         start: int = 2 if self.meal else 1
 
-        if "with" is not self.args[start]:
+        if "with" != self.args[start]:
             return None
 
         ingredients: List[str] = []
         for _, arg in enumerate(self.args[start+1::]):
-            m = re.findall(r"\w",arg)
+            m = re.findall(r"\w", arg)
             word = "".join(m)
             if word:
                 ingredients.append(word)
 
         if not ingredients:
             return None
-            
+
         return ingredients

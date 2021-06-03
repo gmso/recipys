@@ -13,7 +13,7 @@ def main(args=None):
     # ToDo: Process user input arguments
     parser = ArgParser(sys.argv)
     command = parser.parse()
-    
+
     # ToDo: Pass arguments to scraper, which returns search results
 
     # ToDo: Pass search results to printer using rich
