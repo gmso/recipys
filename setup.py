@@ -1,18 +1,32 @@
 import setuptools
+import re
+import ast
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
+with open('recipys/__init__.py', 'rb') as f:
+    _app_name_re = re.compile(r'__app_name__\s+=\s+(.*)')
+    app_name = str(ast.literal_eval(_app_name_re.search(
+        f.read().decode('utf-8')).group(1)))
+
+    _version_re = re.compile(r'__version__\s+=\s+(.*)')
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
+
+
 setuptools.setup(
-    name="recipys",
-    version="0.0.1",
+    name=app_name,
+    version=version,
     author="Germán Mené Santa Olaya",
     author_email="german.mene@gmail.com",
     description="Get recipes instantly with this CLI tool. Choose specific meals or ingredients to cater to your appetite!",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/gmso/recipys",
-    packages = setuptools.find_packages(include = ['recipys*',]),
+    url=f"https://github.com/gmso/{app_name}",
+    packages = setuptools.find_packages(include = [f'{app_name}*',]),
     install_requires=[
         'rich',
     ],
@@ -26,7 +40,7 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "recipys = recipys.App:main"
+            f"{app_name} = {app_name}.App:main"
         ]
     },
 
