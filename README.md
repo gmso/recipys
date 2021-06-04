@@ -12,7 +12,7 @@ This app will provide you with a recipe scraped from the web. The recipe is pres
 ## Installation
 The tool is available as a `pip` package. Download it with the following command:
 ```
-pip install connect-4-cli
+pip install recipys
 ```
 
 Preferably, install in [virtual environment](https://docs.python.org/3/library/venv.html).

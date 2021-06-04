@@ -1,15 +1,14 @@
 import sys
 from recipys.ArgParser import ArgParser
+from recipys.RecipeFetcher import RecipeFetcher
 
 
-def main(args=None):
+def main():
     """
     Main entry point of app.
-
-    Args:
-        args : list of arguments as from the command line.
     """
 
+    wait_for_green_light()
     # ToDo: Process user input arguments
     parser = ArgParser(sys.argv)
     command = parser.parse()
