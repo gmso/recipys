@@ -19,13 +19,13 @@ def test_meals_valid():
     parser = ArgParser(["recipys", "breakfast"])
     assert parser.parse() == ("breakfast", None)
 
-    parser = ArgParser(["recipys", "lunch"])
+    parser = ArgParser(["recipys", "LUNCH"])
     assert parser.parse() == ("lunch", None)
 
-    parser = ArgParser(["recipys", "dinner"])
+    parser = ArgParser(["recipys", "Dinner"])
     assert parser.parse() == ("dinner", None)
 
-    parser = ArgParser(["recipys", "dessert"])
+    parser = ArgParser(["recipys", "dEsSeRT"])
     assert parser.parse() == ("dessert", None)
 
 
@@ -47,14 +47,14 @@ def test_ingredients_valid():
 
     parser = ArgParser(["recipys", "with", "garlic", "onion"])
     assert parser.parse() == (None, ["garlic", "onion"])
-    
+
     parser = ArgParser(["recipys", "with", "'*'#potato+´?."])
     assert parser.parse() == (None, ["potato"])
 
     for w in range(10):
         rand_string = random_string()
         parser = ArgParser(["recipys", "with", rand_string])
-        word  = "".join(re.findall(r"\w",rand_string))
+        word = "".join(re.findall(r"[a-zA-Z]", rand_string)).lower()
         if word:
             assert parser.parse() == (None, [word])
         else:
@@ -62,15 +62,26 @@ def test_ingredients_valid():
 
 
 def test_ingredients_invalid():
-    parser = ArgParser(["recipys", "banana"]) # "with" missing
+    parser = ArgParser(["recipys", "banana"])  # "with" missing
     assert parser.parse() == (None, None)
-    
-    parser = ArgParser(["recipys", "chocolate", "with"]) # "with" misplaced
+
+    parser = ArgParser(["recipys", "chocolate", "with"])  # "with" misplaced
     assert parser.parse() == (None, None)
-    
-    parser = ArgParser(["recipys", "with", "..."]) # invalid ingredient
+
+    parser = ArgParser(["recipys", "with", "..."])  # invalid ingredient
     assert parser.parse() == (None, None)
 
     # one valid ingredient, invalid ingredients ignored
     parser = ArgParser(["recipys", "with", "...", "???", "apple"])
     assert parser.parse() == (None, ["apple"])
+
+
+def test_mixed_valid():
+    parser = ArgParser(["recipys", "breakfast", "with", "oats"])
+    assert parser.parse() == ("breakfast", ["oats"])
+
+    parser = ArgParser(["recipys", "lunch", "WitH", "BEEF", "eGGs"])
+    assert parser.parse() == ("lunch", ["beef", "eggs"])
+
+    parser = ArgParser(["recipys", "dessert", "with", "*`+#+*pe*´+.a45r"])
+    assert parser.parse() == ("dessert", ["pear"])

@@ -42,7 +42,7 @@ class ArgParser():
         """
         if len(self.args) > 1:
             for accepted_meal in self.accepted_meals:
-                if self.args[1] == accepted_meal:
+                if self.args[1].lower() == accepted_meal:
                     return accepted_meal
         return None
 
@@ -53,17 +53,18 @@ class ArgParser():
         Returns:
             - List[str]: list of valid ingredients (default: None)
         """
-        if "with" not in self.args:
+        args = [a.lower() for a in self.args]
+        if "with" not in args:
             return None
 
         start: int = 2 if self.meal else 1
 
-        if "with" != self.args[start]:
+        if "with" != args[start]:
             return None
 
         ingredients: List[str] = []
-        for _, arg in enumerate(self.args[start+1::]):
-            m = re.findall(r"\w", arg)
+        for _, arg in enumerate(args[start+1::]):
+            m = re.findall(r"[a-zA-Z]", arg)
             word = "".join(m)
             if word:
                 ingredients.append(word)
