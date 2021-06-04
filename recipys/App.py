@@ -1,6 +1,7 @@
-import sys
-from recipys.ArgParser import ArgParser
-from recipys.RecipeFetcher import RecipeFetcher
+# import sys
+# from recipys.ArgParser import ArgParser
+# from recipys.RecipeFetcher import RecipeFetcher
+from recipys.request_wait import wait_for_green_light
 
 
 def main():
@@ -9,9 +10,9 @@ def main():
     """
 
     wait_for_green_light()
-    # ToDo: Process user input arguments
-    parser = ArgParser(sys.argv)
-    command = parser.parse()
+
+    # parser = ArgParser(sys.argv)
+    # command = parser.parse()
 
     # ToDo: Pass arguments to scraper, which returns search results
 

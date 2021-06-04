@@ -1,4 +1,4 @@
-from recipys import ConfigFile
+# from recipys import ConfigFile
 
 
 def wait_for_green_light() -> None:
@@ -8,7 +8,6 @@ def wait_for_green_light() -> None:
     period of time (ethical scraping & avoiding blocks)
     """
 
-    MIN_WAIT_SECONDS: float = 10.0
+    # MIN_WAIT_SECONDS: float = 10.0
 
-    config_file = ConfigFile()
-    
+    # config_file = ConfigFile()
