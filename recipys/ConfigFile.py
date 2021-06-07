@@ -30,6 +30,13 @@ class ConfigFile:
                 }
         self.last_request: float = time.time()
 
+    def get_delta_last_request(self) -> float:
+        """
+        Return seconds between now and config file's last request
+        """
+        self._read_config_file()
+        return (time.time() - self.last_request)
+
     def _read_config_file(self) -> None:
         """
         Read config file and update instance variables
@@ -46,23 +53,68 @@ class ConfigFile:
 
         Args:
             - file: file handle of json file
+
+        Raises:
+            - OSError: if KeyError Exception ocurrs (accessing dict)
         """
-        data = json.load(file)
+        data: Dict[str,str] = json.load(file)
         try:
-            headers = data["headers"].replace("\'", "\"")
-            self.headers = json.loads(headers)
+            self.headers = self._get_headers_from_json_file(data)
             self.user_agent = self.headers["User-Agent"]
-            self.last_request = float(data["last_request"])
+            self.last_request = self._get_last_request_from_json_file(data)
         except KeyError:
             raise OSError
 
     def _create_config_file(self) -> None:
         """
-        Create the config file anew using instance variables
+        Create the config file anew using default values
         """
+        new_config_file = ConfigFile()
+        self.headers = new_config_file.headers
+        self.last_request = new_config_file.last_request
         dict_for_json_file: Dict[str, str] = {
             "headers": str(self.headers),
             "last_request": str(self.last_request)
         }
         with open(self.file_name, "w") as file:
             json.dump(dict_for_json_file, file)
+
+
+    def _get_headers_from_json_file(
+        self, data: Dict[str,str]) -> Dict[str,str]:
+        """
+        Return headers dictionary from json loaded data
+
+        Args:
+            - data: dictionary of loaded json data
+
+        Raises:
+            - KeyError: if json file is tampered 
+                (instance keys and dictionary are different)
+        """
+        headers: str = data["headers"].replace("\'", "\"")
+        json_headers: Dict[str, str] = json.loads(headers)
+        if json_headers.keys() != self.headers.keys():
+            raise KeyError  # tampered json file -> reset it
+        return json_headers
+
+
+    def _get_last_request_from_json_file(self, data: Dict[str,str]) -> str:
+        """
+        Return last_request dictionary value from json loaded data
+
+        Args:
+            - data: dictionary of loaded json data
+
+        Raises:
+            - KeyError: if json file is tampered 
+                (instance keys and dictionary are different)
+        """
+        try:
+            json_num = float(data.get("last_request"))
+            own_num = float(self.last_request)
+            if json_num == 0 or own_num <= json_num:
+                raise ValueError
+            return json_num
+        except ValueError:
+            raise KeyError

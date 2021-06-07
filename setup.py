@@ -27,6 +27,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url=f"https://github.com/gmso/{app_name}",
     packages = setuptools.find_packages(include = [f'{app_name}*',]),
+    setup_requires=">3.8.0",
     install_requires=[
         'rich',
     ],
