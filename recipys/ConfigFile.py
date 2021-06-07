@@ -32,7 +32,10 @@ class ConfigFile:
 
     def get_delta_last_request(self) -> float:
         """
-        Return seconds between now and config file's last request
+        Time difference between now and last request (saved in config file)
+
+        Returns:
+            - float: Seconds between current time and last request
         """
         self._read_config_file()
         return (time.time() - self.last_request)
@@ -113,7 +116,7 @@ class ConfigFile:
         try:
             json_num = float(data.get("last_request"))
             own_num = float(self.last_request)
-            if json_num == 0 or own_num <= json_num:
+            if json_num == 0 or own_num < json_num:
                 raise ValueError
             return json_num
         except ValueError:
