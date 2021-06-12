@@ -108,8 +108,22 @@ def test_get_delta_last_request(config_file_with_cleanup):
     
     time.sleep(0.1)
     delta = config_file.get_delta_last_request()
-    assert 0.05 < delta < 0.15
+    assert 0.1 < delta
 
     time.sleep(0.1)
     delta = config_file.get_delta_last_request()
-    assert 0.15 < delta < 0.25
+    assert 0.15 < delta
+
+
+def test_update_time_last_request(config_file_with_cleanup):
+    config_file = ConfigFile()
+    timestamp_initial = config_file.last_request
+    config_file._read_config_file()
+    
+    time.sleep(0.1)
+    config_file.update_time_last_request()
+    assert 0.1 < time.time() - timestamp_initial
+
+    time.sleep(0.1)
+    config_file.update_time_last_request()
+    assert 0.2 < time.time() - timestamp_initial

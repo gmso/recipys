@@ -40,6 +40,12 @@ class ConfigFile:
         self._read_config_file()
         return (time.time() - self.last_request)
 
+    def update_time_last_request(self) -> None:
+        """
+        Update timestamp of last request, both locally and in config file
+        """
+        self._create_config_file()
+
     def _read_config_file(self) -> None:
         """
         Read config file and update instance variables
