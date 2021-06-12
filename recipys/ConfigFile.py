@@ -66,7 +66,7 @@ class ConfigFile:
         Raises:
             - OSError: if KeyError Exception ocurrs (accessing dict)
         """
-        data: Dict[str,str] = json.load(file)
+        data: Dict[str, str] = json.load(file)
         try:
             self.headers = self._get_headers_from_json_file(data)
             self.user_agent = self.headers["User-Agent"]
@@ -88,9 +88,8 @@ class ConfigFile:
         with open(self.file_name, "w") as file:
             json.dump(dict_for_json_file, file)
 
-
     def _get_headers_from_json_file(
-        self, data: Dict[str,str]) -> Dict[str,str]:
+            self, data: Dict[str, str]) -> Dict[str, str]:
         """
         Return headers dictionary from json loaded data
 
@@ -98,7 +97,7 @@ class ConfigFile:
             - data: dictionary of loaded json data
 
         Raises:
-            - KeyError: if json file is tampered 
+            - KeyError: if json file is tampered
                 (instance keys and dictionary are different)
         """
         headers: str = data["headers"].replace("\'", "\"")
@@ -107,8 +106,7 @@ class ConfigFile:
             raise KeyError  # tampered json file -> reset it
         return json_headers
 
-
-    def _get_last_request_from_json_file(self, data: Dict[str,str]) -> str:
+    def _get_last_request_from_json_file(self, data: Dict[str, str]) -> str:
         """
         Return last_request dictionary value from json loaded data
 
@@ -116,7 +114,7 @@ class ConfigFile:
             - data: dictionary of loaded json data
 
         Raises:
-            - KeyError: if json file is tampered 
+            - KeyError: if json file is tampered
                 (instance keys and dictionary are different)
         """
         try:

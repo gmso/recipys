@@ -1,7 +1,7 @@
 # import sys
+from recipys.request_wait import wait_for_green_light
 # from recipys.ArgParser import ArgParser
 # from recipys.RecipeFetcher import RecipeFetcher
-from recipys.request_wait import wait_for_green_light
 
 
 def main():
@@ -11,8 +11,7 @@ def main():
 
     wait_for_green_light()
 
-    # parser = ArgParser(sys.argv)
-    # command = parser.parse()
+    # command = ArgParser(sys.argv).parse()
 
     # ToDo: Pass arguments to scraper, which returns search results
 

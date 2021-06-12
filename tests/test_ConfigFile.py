@@ -1,7 +1,7 @@
 import time
 from pathlib import Path
-from pytest import fixture
 from recipys.ConfigFile import ConfigFile
+from utility_fixtures import config_file_cleanup
 
 
 def test_ConfigFile_construction():
@@ -24,16 +24,7 @@ def test_ConfigFile_construction():
     assert (config_file.last_request - time.time() < 1)
 
 
-@fixture
-def config_file_with_cleanup():
-    config_file = ConfigFile()
-    file_path = Path(config_file.file_name)
-    file_path.unlink(missing_ok=True)  # delete config file if exists
-    yield
-    file_path.unlink()  # delete config file
-
-
-def test_create_and_read_config_file(config_file_with_cleanup):
+def test_create_and_read_config_file(config_file_cleanup):
     config_file = ConfigFile()
     assert not Path(config_file.file_name).is_file()
 
@@ -54,38 +45,37 @@ def test_create_and_read_config_file(config_file_with_cleanup):
     assert not config_file.last_request == new_time
 
 
-def test_tampered_config_file_headers(config_file_with_cleanup):
+def test_tampered_config_file_headers(config_file_cleanup):
     config_file = ConfigFile()
     assert config_file.headers.get("User-Agent", None)
 
     # File does not exist -> create with current values
     config_file._read_config_file()
     assert Path(config_file.file_name).is_file()
-    
+
     # Change content of instance
     del config_file.headers["User-Agent"]
     assert not config_file.headers.get("User-Agent", None)
-    
+
     # File exists but differs from local info -> reset content
     assert not config_file.headers.get("User-Agent", None)
     config_file._read_config_file()
 
     # Local instance should be updated with config file's content
     assert config_file.headers["User-Agent"]
-    
 
 
-def test_tampered_config_file_last_request(config_file_with_cleanup):
+def test_tampered_config_file_last_request(config_file_cleanup):
     config_file = ConfigFile()
 
     # File does not exist -> create with current values
     config_file._read_config_file()
     assert Path(config_file.file_name).is_file()
-    
+
     # Change content of instance
     assert config_file.last_request
     config_file.last_request = "not_a_number"
-    
+
     # File exists but local info is invalid -> reset content
     config_file._read_config_file()
 
@@ -94,18 +84,18 @@ def test_tampered_config_file_last_request(config_file_with_cleanup):
 
     # Change content of instance
     config_file.last_request = str(time.time() - 10)
-    
+
     # File exists but local info is invalid -> reset content
     config_file._read_config_file()
 
     # Local instance should be updated with config file's content
     assert config_file.last_request
-    
 
-def test_get_delta_last_request(config_file_with_cleanup):
+
+def test_get_delta_last_request(config_file_cleanup):
     config_file = ConfigFile()
     config_file._read_config_file()
-    
+
     time.sleep(0.1)
     delta = config_file.get_delta_last_request()
     assert 0.1 < delta
@@ -115,11 +105,11 @@ def test_get_delta_last_request(config_file_with_cleanup):
     assert 0.15 < delta
 
 
-def test_update_time_last_request(config_file_with_cleanup):
+def test_update_time_last_request(config_file_cleanup):
     config_file = ConfigFile()
     timestamp_initial = config_file.last_request
     config_file._read_config_file()
-    
+
     time.sleep(0.1)
     config_file.update_time_last_request()
     assert 0.1 < time.time() - timestamp_initial

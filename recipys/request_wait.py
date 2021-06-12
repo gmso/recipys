@@ -1,5 +1,6 @@
 from time import sleep
 from recipys.ConfigFile import ConfigFile
+from recipys.constants import MIN_SECONDS_REQUEST as min_seconds
 
 
 def wait_for_green_light() -> None:
@@ -9,9 +10,9 @@ def wait_for_green_light() -> None:
     period of time (ethical scraping & avoiding blocks)
     """
 
-    MIN_SECONDS_REQUEST: float = 10.0
-
     seconds_passed = ConfigFile().get_delta_last_request()
 
-    if seconds_passed < MIN_SECONDS_REQUEST:
-        sleep(seconds_passed)
+    if seconds_passed < min_seconds:
+        sleep(min_seconds - seconds_passed)
+
+    ConfigFile().update_time_last_request()
