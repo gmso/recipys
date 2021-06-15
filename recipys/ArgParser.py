@@ -26,7 +26,7 @@ class ArgParser():
         Returns:
             Tuple with:
                 - str: meal name (default: None)
-                - List[str]: list of ingredients (default: List[None])
+                - List[str]: list of ingredients (default: None)
         """
 
         self.meal: str = self._get_meal()
