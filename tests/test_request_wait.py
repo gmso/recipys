@@ -10,8 +10,8 @@ def test_wait_below_min_seconds(config_file_cleanup):
     patch_seconds_passed = min_seconds - 0.1
 
     with patch.object(
-        ConfigFile, "get_delta_last_request",
-            return_value=patch_seconds_passed):
+        ConfigFile, "get_delta_last_request", return_value=patch_seconds_passed
+    ):
 
         timestamp_start = time.time()
         assert timestamp_start > 0
@@ -25,8 +25,8 @@ def test_wait_above_min_seconds(config_file_cleanup):
     patch_seconds_passed = min_seconds + 0.1
 
     with patch.object(
-        ConfigFile, "get_delta_last_request",
-            return_value=patch_seconds_passed):
+        ConfigFile, "get_delta_last_request", return_value=patch_seconds_passed
+    ):
 
         timestamp_start = time.time()
         assert timestamp_start > 0

@@ -5,8 +5,7 @@ from utility_randoms import random_string
 
 def test_ArgParser_construction():
     parser = ArgParser(["recipys"])
-    assert parser.accepted_meals == {
-            "breakfast", "lunch", "dinner", "dessert"}
+    assert parser.accepted_meals == {"breakfast", "lunch", "dinner", "dessert"}
     assert parser.args
 
 

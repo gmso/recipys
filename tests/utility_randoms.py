@@ -13,6 +13,5 @@ def random_string() -> str:
     str_length = random.choice(range(1, 16))
     word = []
     for c in range(str_length):
-        word.append(
-            random.choice(string.ascii_letters + string.punctuation))
+        word.append(random.choice(string.ascii_letters + string.punctuation))
     return "".join(word)

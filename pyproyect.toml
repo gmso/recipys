@@ -1,6 +1,0 @@
-[tool.autohooks]
-mode = "pythonpath"
-pre-commit = ["autohooks.plugins.black"]
-
-[tool.autohooks.plugins.black]
-arguments = ["--check"]

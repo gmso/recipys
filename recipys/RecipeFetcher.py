@@ -12,7 +12,8 @@ class RecipeFetcher:
         Initialize instance variables
         """
         self.url_base: str = (
-            "http://www.recipepuppy.com/api/"  # ALTERNATIVE: www.recipe-free.com
+            "http://www.recipepuppy.com/api/"
+            # ALTERNATIVE: www.recipe-free.com
         )
         self.url_prefix_meal: str = "q"
         self.url_prefix_ingredients: str = "i"
@@ -71,7 +72,9 @@ class RecipeFetcher:
             payload.setdefault(self.url_prefix_meal, self.meal)
 
         if self.ingredients:
-            payload.setdefault(self.url_prefix_ingredients, ",".join(self.ingredients))
+            payload.setdefault(
+                self.url_prefix_ingredients, ",".join(self.ingredients)
+            )
 
         if self.url_page_number != 0:
             payload.setdefault(self.url_prefix_page, self.url_page_number)
@@ -90,7 +93,9 @@ class RecipeFetcher:
         except requests.exceptions.HTTPError:
             raise ConnectionRefusedError
 
-    def _convert_http_response_to_json(self, res: requests.Response) -> Dict[str, str]:
+    def _convert_http_response_to_json(
+        self, res: requests.Response
+    ) -> Dict[str, str]:
         """
         Convert response of HTTP GET request to json
 
@@ -113,4 +118,3 @@ class RecipeFetcher:
             - page number in which recipe was found
         """
         return (False, 1)
-

@@ -39,7 +39,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Check format with black
       run: |
-        black ${{ env.MODULE_NAME }} --check
+        black . --check
     - name: Test with pytest
       run: |
         pytest -v --cov=./${{ env.MODULE_NAME }} --cov-report=xml:./coverage.xml

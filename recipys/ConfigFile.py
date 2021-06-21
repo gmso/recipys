@@ -90,7 +90,9 @@ class ConfigFile:
         with open(self.file_name, "w") as file:
             json.dump(dict_for_json_file, file)
 
-    def _get_headers_from_json_file(self, data: Dict[str, str]) -> Dict[str, str]:
+    def _get_headers_from_json_file(
+        self, data: Dict[str, str]
+    ) -> Dict[str, str]:
         """
         Return headers dictionary from json loaded data
 
