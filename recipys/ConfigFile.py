@@ -16,18 +16,20 @@ class ConfigFile:
         self.file_name: str = "config.json"
         self.user_agent: str = (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) "
-            "Gecko/20100101 Firefox/89.0")
+            "Gecko/20100101 Firefox/89.0"
+        )
         self.headers: Dict[str, str] = {
-                "User-Agent": self.user_agent,
-                "Accept": (
-                    "text/html,application/xhtml+xml,application/xml"
-                    ";q=0.9,image/webp,*/*;q=0.8"),
-                "Accept-Language": "en-US,en;q=0.5",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1",
-                "Referer": "https://www.duckduckgo.com/"
-                }
+            "User-Agent": self.user_agent,
+            "Accept": (
+                "text/html,application/xhtml+xml,application/xml"
+                ";q=0.9,image/webp,*/*;q=0.8"
+            ),
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Referer": "https://www.duckduckgo.com/",
+        }
         self.last_request: float = time.time()
 
     def get_delta_last_request(self) -> float:
@@ -38,7 +40,7 @@ class ConfigFile:
             - float: Seconds between current time and last request
         """
         self._read_config_file()
-        return (time.time() - self.last_request)
+        return time.time() - self.last_request
 
     def update_time_last_request(self) -> None:
         """
@@ -83,13 +85,12 @@ class ConfigFile:
         self.last_request = new_config_file.last_request
         dict_for_json_file: Dict[str, str] = {
             "headers": str(self.headers),
-            "last_request": str(self.last_request)
+            "last_request": str(self.last_request),
         }
         with open(self.file_name, "w") as file:
             json.dump(dict_for_json_file, file)
 
-    def _get_headers_from_json_file(
-            self, data: Dict[str, str]) -> Dict[str, str]:
+    def _get_headers_from_json_file(self, data: Dict[str, str]) -> Dict[str, str]:
         """
         Return headers dictionary from json loaded data
 
@@ -100,7 +101,7 @@ class ConfigFile:
             - KeyError: if json file is tampered
                 (instance keys and dictionary are different)
         """
-        headers: str = data["headers"].replace("\'", "\"")
+        headers: str = data["headers"].replace("'", '"')
         json_headers: Dict[str, str] = json.loads(headers)
         if json_headers.keys() != self.headers.keys():
             raise KeyError  # tampered json file -> reset it

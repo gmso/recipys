@@ -1,8 +1,8 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 import requests
 
 
-class RecipeFetcher():
+class RecipeFetcher:
     """
     Fetches recipes from the web
     """
@@ -11,20 +11,21 @@ class RecipeFetcher():
         """
         Initialize instance variables
         """
-        self.url_base: str = "http://www.recipepuppy.com/api/"
+        self.url_base: str = (
+            "http://www.recipepuppy.com/api/"  # ALTERNATIVE: www.recipe-free.com
+        )
         self.url_prefix_meal: str = "q"
         self.url_prefix_ingredients: str = "i"
         self.url_prefix_page: str = "p"
         self.url_page_number: int = 1
-        self.whitelist_targets: List[str] = [
-            "recipeezaar"
-        ]
+        self.whitelist_targets: List[str] = ["recipeezaar"]
         self.meal: Optional[str] = None
         self.ingredients: Optional[List[str]] = None
+        self.recipe_found: bool = False
 
     def fetch_recipe(
-            self, meal: Optional[str], ingredients: Optional[List[str]]
-                ) -> Dict[str, str]:
+        self, meal: Optional[str], ingredients: Optional[List[str]]
+    ) -> Dict[str, str]:
         """
         Fetches recipe according to user input
 
@@ -39,7 +40,9 @@ class RecipeFetcher():
         (self.meal, self.ingredients) = (meal, ingredients)
 
         try:
-            api_response = self._recipe_api_get_request()
+            while not self.recipe_found:
+                api_response = self._recipe_api_get_request()
+                self.recipe_found = self._check_valid_target_in_api_response()
         except ConnectionRefusedError:
             return {"error": "HTTP request error. Please try again"}
 
@@ -68,12 +71,10 @@ class RecipeFetcher():
             payload.setdefault(self.url_prefix_meal, self.meal)
 
         if self.ingredients:
-            payload.setdefault(
-                self.url_prefix_ingredients, ",".join(self.ingredients))
+            payload.setdefault(self.url_prefix_ingredients, ",".join(self.ingredients))
 
         if self.url_page_number != 0:
-            payload.setdefault(
-                self.url_prefix_page, self.url_page_number)
+            payload.setdefault(self.url_prefix_page, self.url_page_number)
 
         return payload
 
@@ -89,8 +90,7 @@ class RecipeFetcher():
         except requests.exceptions.HTTPError:
             raise ConnectionRefusedError
 
-    def _convert_http_response_to_json(
-            self, res: requests.Response) -> Dict[str, str]:
+    def _convert_http_response_to_json(self, res: requests.Response) -> Dict[str, str]:
         """
         Convert response of HTTP GET request to json
 
@@ -103,3 +103,12 @@ class RecipeFetcher():
             raise ConnectionRefusedError
         else:
             return api_response
+
+    def _is_whitelisted_target_in_api_response(self) -> Tuple(bool, int):
+        """
+        Check if the api response has a whitelisted target in its content
+
+        Returns:
+            - bool flag to indicate if accepted recipe was found
+            - page number in which recipe was found
+        """

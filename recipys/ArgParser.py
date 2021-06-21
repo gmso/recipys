@@ -2,7 +2,7 @@ import re
 from typing import List, Tuple, AbstractSet, Optional
 
 
-class ArgParser():
+class ArgParser:
     """
     Command line arguments parser
     """
@@ -16,7 +16,11 @@ class ArgParser():
         """
 
         self.accepted_meals: AbstractSet[str] = {
-            "breakfast", "lunch", "dinner", "dessert"}
+            "breakfast",
+            "lunch",
+            "dinner",
+            "dessert",
+        }
         self.args: List[str] = args
 
     def parse(self) -> Tuple[Optional[str], Optional[List[str]]]:
@@ -63,7 +67,7 @@ class ArgParser():
             return None
 
         ingredients: List[str] = []
-        for _, arg in enumerate(args[start+1::]):
+        for _, arg in enumerate(args[start + 1 : :]):
             m = re.findall(r"[a-zA-Z]", arg)
             word = "".join(m)
             if word:
