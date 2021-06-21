@@ -104,7 +104,7 @@ class RecipeFetcher:
         else:
             return api_response
 
-    def _is_whitelisted_target_in_api_response(self) -> Tuple(bool, int):
+    def _is_whitelisted_target_in_api_response(self) -> Tuple[bool, int]:
         """
         Check if the api response has a whitelisted target in its content
 
@@ -112,3 +112,5 @@ class RecipeFetcher:
             - bool flag to indicate if accepted recipe was found
             - page number in which recipe was found
         """
+        return (False, 1)
+
