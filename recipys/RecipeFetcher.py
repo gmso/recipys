@@ -33,25 +33,6 @@ class RecipeFetcher:
         """
         (self.meal, self.ingredients) = (meal, ingredients)
 
-        try:
-            while not self.recipe_found:
-                api_response = self._recipe_api_get_request()
-                self.recipe_found = self._check_valid_target_in_api_response()
-        except ConnectionRefusedError:
-            return {"error": "HTTP request error. Please try again"}
-
-    def _recipe_api_get_request(self) -> Dict[str, str]:
-        """
-        Request recipe from API provider
-
-        Returns:
-            - Dictionary json response of API
-        """
-        payload = self._get_payload()
-        res = requests.get(self.url_base, params=payload)
-        self._check_http_response_status(res)
-        return self._convert_http_response_to_json(res)
-
     def _get_payload(self) -> str:
         """
         Get payload used as arguments for query of HTTP GET request
@@ -73,41 +54,3 @@ class RecipeFetcher:
             payload.setdefault(self.url_prefix_page, self.url_page_number)
 
         return payload
-
-    def _check_http_response_status(self, res: requests.Response) -> None:
-        """
-        Check response of http GET request
-
-        Raises:
-            - ConnectionRefuserError if request's status is invalid
-        """
-        try:
-            res.raise_for_status()
-        except requests.exceptions.HTTPError:
-            raise ConnectionRefusedError
-
-    def _convert_http_response_to_json(
-        self, res: requests.Response
-    ) -> Dict[str, str]:
-        """
-        Convert response of HTTP GET request to json
-
-        Raises:
-            - ConnectionRefuserError if response cannot be converted from json
-        """
-        try:
-            api_response = res.json()
-        except ValueError:
-            raise ConnectionRefusedError
-        else:
-            return api_response
-
-    def _is_whitelisted_target_in_api_response(self) -> Tuple[bool, int]:
-        """
-        Check if the api response has a whitelisted target in its content
-
-        Returns:
-            - bool flag to indicate if accepted recipe was found
-            - page number in which recipe was found
-        """
-        return (False, 1)

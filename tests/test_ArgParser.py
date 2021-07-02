@@ -1,86 +1,109 @@
 import re
-from recipys.ArgParser import ArgParser
 from utility_randoms import random_string
+
+from recipys.ArgParser import ArgParser
 
 
 def test_ArgParser_construction():
     parser = ArgParser(["recipys"])
-    assert parser.accepted_meals == {"breakfast", "lunch", "dinner", "dessert"}
+    assert parser.accepted_meals == ("breakfast", "lunch", "dinner", "dessert")
     assert parser.args
 
 
 def test_no_arguments():
-    parser = ArgParser(["recipys"])
-    assert parser.parse() == (None, None)
+    constraints = ArgParser(["recipys"]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
 
 def test_meals_valid():
-    parser = ArgParser(["recipys", "breakfast"])
-    assert parser.parse() == ("breakfast", None)
+    constraints = ArgParser(["recipys", "breakfast"]).parse()
+    assert constraints.meal == "breakfast"
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "LUNCH"])
-    assert parser.parse() == ("lunch", None)
+    constraints = ArgParser(["recipys", "LUNCH"]).parse()
+    assert constraints.meal == "lunch"
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "Dinner"])
-    assert parser.parse() == ("dinner", None)
+    constraints = ArgParser(["recipys", "Dinner"]).parse()
+    assert constraints.meal == "dinner"
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "dEsSeRT"])
-    assert parser.parse() == ("dessert", None)
+    constraints = ArgParser(["recipys", "dEsSeRT"]).parse()
+    assert constraints.meal == "dessert"
+    assert not constraints.ingredients
 
 
 def test_meals_invalid():
-    parser = ArgParser(["recipys", "desssert"])
-    assert parser.parse() == (None, None)
+    constraints = ArgParser(["recipys", "desssert"]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "a", "lunch"])
-    assert parser.parse() == (None, None)
+    constraints = ArgParser(["recipys", "a", "lunch"]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
     for w in range(10):
-        parser = ArgParser(["recipys", random_string()])
-        assert parser.parse() == (None, None)
-
+        constraints = ArgParser(["recipys", random_string()]).parse()
+        assert not constraints.meal
+        assert not constraints.ingredients
 
 def test_ingredients_valid():
-    parser = ArgParser(["recipys", "with", "banana"])
-    assert parser.parse() == (None, ["banana"])
+    constraints = ArgParser(["recipys", "with", "banana"]).parse()
+    assert not constraints.meal
+    assert constraints.ingredients == ["banana"]
 
-    parser = ArgParser(["recipys", "with", "garlic", "onion"])
-    assert parser.parse() == (None, ["garlic", "onion"])
+    constraints = ArgParser(["recipys", "with", "garlic", "onion"]).parse()
+    assert not constraints.meal
+    assert constraints.ingredients  == ["garlic", "onion"]
 
-    parser = ArgParser(["recipys", "with", "'*'#potato+´?."])
-    assert parser.parse() == (None, ["potato"])
+    constraints = ArgParser(["recipys", "with", "'*'#potato+´?."]).parse()
+    assert not constraints.meal
+    assert constraints.ingredients == ["potato"]
 
     for w in range(10):
         rand_string = random_string()
-        parser = ArgParser(["recipys", "with", rand_string])
+        constraints = ArgParser(["recipys", "with", rand_string]).parse()
         word = "".join(re.findall(r"[a-zA-Z]", rand_string)).lower()
         if word:
-            assert parser.parse() == (None, [word])
+            assert not constraints.meal
+            assert constraints.ingredients == [word]
         else:
-            assert parser.parse() == (None, None)
+            assert not constraints.meal
+            assert not constraints.ingredients
 
 
 def test_ingredients_invalid():
-    parser = ArgParser(["recipys", "banana"])  # "with" missing
-    assert parser.parse() == (None, None)
+    # "with" missing
+    constraints = ArgParser(["recipys", "banana"]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "chocolate", "with"])  # "with" misplaced
-    assert parser.parse() == (None, None)
+    # "with" misplaced
+    constraints = ArgParser(["recipys", "chocolate", "with"]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
-    parser = ArgParser(["recipys", "with", "..."])  # invalid ingredient
-    assert parser.parse() == (None, None)
+    # invalid ingredient
+    constraints = ArgParser(["recipys", "with", "..."]).parse()
+    assert not constraints.meal
+    assert not constraints.ingredients
 
     # one valid ingredient, invalid ingredients ignored
-    parser = ArgParser(["recipys", "with", "...", "???", "apple"])
-    assert parser.parse() == (None, ["apple"])
+    constraints = ArgParser(["recipys", "with", "...", "???", "apple"]).parse()
+    assert not constraints.meal
+    assert constraints.ingredients == ["apple"]
 
 
 def test_mixed_valid():
-    parser = ArgParser(["recipys", "breakfast", "with", "oats"])
-    assert parser.parse() == ("breakfast", ["oats"])
+    constraints = ArgParser(["recipys", "breakfast", "with", "oats"]).parse()
+    assert constraints.meal == "breakfast"
+    assert constraints.ingredients == ["oats"]
 
-    parser = ArgParser(["recipys", "lunch", "WitH", "BEEF", "eGGs"])
-    assert parser.parse() == ("lunch", ["beef", "eggs"])
+    constraints = ArgParser(["recipys", "lunch", "WitH", "BEEF", "eGGs"]).parse()
+    assert constraints.meal == "lunch"
+    assert constraints.ingredients == ["beef", "eggs"]
 
-    parser = ArgParser(["recipys", "dessert", "with", "*`+#+*pe*´+.a45r"])
-    assert parser.parse() == ("dessert", ["pear"])
+    constraints = ArgParser(["recipys", "dessert", "with", "*`+#+*pe*´+.a45r"]).parse()
+    assert constraints.meal == "dessert"
+    assert constraints.ingredients == ["pear"]
