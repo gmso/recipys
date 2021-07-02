@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from typing import List
+from typing import List, Dict
 
 import pytest
 import requests
@@ -50,26 +50,80 @@ def test_check_http_response_status():
             scraper._check_http_response_status()
 
 
-def test_parse():
-    target = HtmlSearchTarget("Title of document", "class", "title")
-    terms = [ScraperSearchTerms(target)]
+def parse_scraper_from_target(
+    *args, return_multiple=False
+) -> Dict[str, List[str]]:
+    """Helper function to parse directly"""
+    terms: List[ScraperSearchTerms] = []
+    for target in args:
+        terms.append(ScraperSearchTerms(target, return_multiple))
     scraper = Scraper("https://www.somewebsite.com", terms)
     scraper._html = HTML_PAGE
-    result = scraper._parse()
+    return scraper._parse()
+
+
+def test_parse_simple():
+    target = HtmlSearchTarget(name="Title of document", tag="title")
+    result = parse_scraper_from_target(target)
     assert result == {"Title of document": ["The Dormouse's story"]}
 
-    target = HtmlSearchTarget("Sisters", "class", "sister")
-    terms = [ScraperSearchTerms(target, return_multiple=True)]
-    scraper = Scraper("https://www.somewebsite.com", terms)
-    scraper._html = HTML_PAGE
-    result = scraper._parse()
+    target = HtmlSearchTarget(
+        name="Title of document", att_name="class", att_value="title"
+    )
+    result = parse_scraper_from_target(target)
+    assert result == {"Title of document": ["The Dormouse's story"]}
+
+    target = HtmlSearchTarget(
+        name="Story", tag="p", att_name="class", att_value="story"
+    )
+    result = parse_scraper_from_target(target)
+    assert "Once upon a time" in result["Story"][0]
+
+
+def test_parse_multiple():
+    target = HtmlSearchTarget(
+        name="Sisters", tag="a", att_name="class", att_value="sister"
+    )
+    result = parse_scraper_from_target(target, return_multiple=True)
     assert result == {"Sisters": ["Elsie", "Lacie", "Tillie"]}
 
     target = HtmlSearchTarget(
-        "Sisters", "class", "sister", target_element="id"
+        name="Sisters",
+        att_name="class",
+        att_value="sister",
+        target_element="id",
     )
-    terms = [ScraperSearchTerms(target, return_multiple=True)]
-    scraper = Scraper("https://www.somewebsite.com", terms)
-    scraper._html = HTML_PAGE
-    result = scraper._parse()
+    result = parse_scraper_from_target(target, return_multiple=True)
     assert result == {"Sisters": ["link1", "link2", "link3"]}
+
+    target_stories = HtmlSearchTarget(
+        name="Stories", tag="p", att_name="class", att_value="story"
+    )
+    target_urls = HtmlSearchTarget(name="URLs", tag="a", target_element="href")
+    result = parse_scraper_from_target(
+        target_stories, target_urls, return_multiple=True
+    )
+    assert len(result) > 1
+    assert len(result["Stories"]) == 2
+    assert "Once upon a time" in result["Stories"][0]
+    assert result["Stories"][1] == "..."
+    assert len(result["URLs"]) == 3
+    assert result["URLs"][0] == "http://example.com/elsie"
+    assert result["URLs"][1] == "http://example.com/lacie"
+    assert result["URLs"][2] == "http://example.com/tillie"
+
+
+def test_parse_no_hits():
+    target = HtmlSearchTarget(name="Divs", tag="div")
+    result = parse_scraper_from_target(target, return_multiple=True)
+    assert result == {"Divs": []}
+
+    target = HtmlSearchTarget(
+        name="Styles",
+        tag="a",
+        att_name="class",
+        att_value="sister",
+        target_element="style",
+    )
+    result = parse_scraper_from_target(target, return_multiple=True)
+    assert result == {"Styles": []}

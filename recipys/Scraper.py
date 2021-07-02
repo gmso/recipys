@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from bs4 import BeautifulSoup
 import requests
 
+import bs4
+
 
 ERROR_MESSAGE: Dict[str, List[str]] = {
     "ERROR": [
@@ -19,8 +21,9 @@ class HtmlSearchTarget:
     """Search target for HTML elements and their values"""
 
     name: str
-    search_element_named: str
-    search_element_with_value: str
+    tag: Optional[str] = None
+    att_name: Optional[str] = None
+    att_value: Optional[str] = None
     target_element: Optional[str] = None  # If none, inner HTML is returned
 
 
@@ -64,24 +67,27 @@ class Scraper:
         """Return Dict with findings in HTML file according to search terms"""
         parsed_results: Dict[str, List[str]] = {}
 
-        soup = BeautifulSoup(self._html, "html.parser")
-
         for search in self.search_terms:
             results: List[str] = []
-            limit_hits: int = 20 if search.return_multiple else 1
 
+            limit_hits = None if search.return_multiple else 1
+            attributes = {search.target.att_name, search.target.att_value}
+            if None in attributes:
+                attributes = {}
+
+            soup = BeautifulSoup(self._html, "html.parser")
             tags = soup.find_all(
-                attrs={
-                    search.target.search_element_named,
-                    search.target.search_element_with_value,
-                },
+                name=search.target.tag,
+                attrs=attributes,
                 limit=limit_hits,
             )
 
             for tag in tags:
                 if search.target.target_element:
                     # Specific tag of element is searched
-                    att_value = tag.attrs.get(search.target.target_element, None)
+                    att_value = tag.attrs.get(
+                        search.target.target_element, None
+                    )
                     if att_value:
                         results.append(att_value)
                 else:
