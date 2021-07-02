@@ -4,15 +4,7 @@ from typing import Dict, List, Optional, Tuple
 from bs4 import BeautifulSoup
 import requests
 
-
-ERROR_MESSAGE: Dict[str, List[str]] = {
-    "ERROR": [
-        (
-            "HTTP request error. "
-            "Please check your internet connection and try again"
-        )
-    ]
-}
+from recipys.types import FetchingError
 
 
 @dataclass
@@ -48,7 +40,12 @@ class Scraper:
         try:
             self._check_http_response_status()
         except ConnectionRefusedError:
-            return ERROR_MESSAGE
+            raise FetchingError(
+                (
+                    "HTTP request error. "
+                    "Please check your internet connection and try again"
+                )
+            )
 
         self._html = self._http_response.text
         return self._parse()

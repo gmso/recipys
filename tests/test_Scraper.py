@@ -4,12 +4,8 @@ from typing import List, Dict
 import pytest
 import requests
 
-from recipys.Scraper import (
-    HtmlSearchTarget,
-    Scraper,
-    ScraperSearchTerms,
-    ERROR_MESSAGE,
-)
+from recipys.Scraper import HtmlSearchTarget, Scraper, ScraperSearchTerms
+from recipys.types import FetchingError
 
 
 HTML_PAGE: str = """\
@@ -161,5 +157,6 @@ def test_get_with_error():
             )
         ],
     )
-    result = scraper.get()
-    assert result == ERROR_MESSAGE
+
+    with pytest.raises(FetchingError):
+        result = scraper.get()

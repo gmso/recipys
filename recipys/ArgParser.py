@@ -8,6 +8,7 @@ from recipys.types import RecipeConstraints
 @dataclass
 class ArgParser:
     """Command line arguments parser"""
+
     args: List[str]
     accepted_meals: Tuple[str] = (
         "breakfast",

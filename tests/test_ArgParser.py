@@ -48,6 +48,7 @@ def test_meals_invalid():
         assert not constraints.meal
         assert not constraints.ingredients
 
+
 def test_ingredients_valid():
     constraints = ArgParser(["recipys", "with", "banana"]).parse()
     assert not constraints.meal
@@ -55,7 +56,7 @@ def test_ingredients_valid():
 
     constraints = ArgParser(["recipys", "with", "garlic", "onion"]).parse()
     assert not constraints.meal
-    assert constraints.ingredients  == ["garlic", "onion"]
+    assert constraints.ingredients == ["garlic", "onion"]
 
     constraints = ArgParser(["recipys", "with", "'*'#potato+´?."]).parse()
     assert not constraints.meal
@@ -100,10 +101,14 @@ def test_mixed_valid():
     assert constraints.meal == "breakfast"
     assert constraints.ingredients == ["oats"]
 
-    constraints = ArgParser(["recipys", "lunch", "WitH", "BEEF", "eGGs"]).parse()
+    constraints = ArgParser(
+        ["recipys", "lunch", "WitH", "BEEF", "eGGs"]
+    ).parse()
     assert constraints.meal == "lunch"
     assert constraints.ingredients == ["beef", "eggs"]
 
-    constraints = ArgParser(["recipys", "dessert", "with", "*`+#+*pe*´+.a45r"]).parse()
+    constraints = ArgParser(
+        ["recipys", "dessert", "with", "*`+#+*pe*´+.a45r"]
+    ).parse()
     assert constraints.meal == "dessert"
     assert constraints.ingredients == ["pear"]

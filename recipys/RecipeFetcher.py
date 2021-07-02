@@ -1,56 +1,104 @@
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
-import requests
+
+from recipys.types import RecipeConstraints, RecipeInformation, FetchingError
+from recipys.Scraper import (
+    Scraper,
+    ScraperSearchTerms,
+    HtmlSearchTarget,
+)
 
 
 @dataclass
 class RecipeFetcher:
-    """
-    Fetches recipes from the web
-    """
-    url_base: str = (
-        "https://www.recipe-free.com/recipe"
-    )
-    url_suffix: str = "search"
-    url_page_number: int = 1
-    meal: Optional[str] = None
-    ingredients: Optional[List[str]] = None
-    recipe_found: bool = False
+    """Fetches recipes from the web"""
 
-    def fetch_recipe(
-        self, meal: Optional[str], ingredients: Optional[List[str]]
-    ) -> Dict[str, str]:
-        """
-        Fetches recipe according to user input
+    recipe_constraints: RecipeConstraints
 
-        Args:
-            - meal: name of meal type to search (default: None)
-            - ingredients: list of ingredients (default: None)
+    def fetch_recipe(self) -> RecipeInformation:
+        """Fetches recipe according to user input"""
+        self.recipe_url = self._scrape_recipe_url()
+        return self._scrape_recipe()
 
-        Returns:
-            - Dictionary with meal information (name, ingredients,
-                preparation, error)
-        """
-        (self.meal, self.ingredients) = (meal, ingredients)
+    def _get_url_recipe(self) -> str:
+        """Get URL for HTTP GET request"""
+        query: str
+        if self.recipe_constraints.meal:
+            query += self.recipe_constraints.meal + "-"
+        if self.recipe_constraints.ingredients:
+            query += "-".join(self.recipe_constraints.ingredients)
 
-    def _get_payload(self) -> str:
-        """
-        Get payload used as arguments for query of HTTP GET request
+        return "https://www.recipe-free.com/recipe/" + query + "/1/search"
 
-        Returns:
-            - payload for GET request as string
-        """
-        payload: Dict[str, str] = {}
+    def _scrape_recipe_url(self) -> str:
+        """Scrape url of recipe according to search constraints"""
+        scraper = Scraper(
+            url=self._get_url_recipe(),
+            search_terms=[
+                ScraperSearchTerms(
+                    target=HtmlSearchTarget(
+                        name="Recipe",
+                        tag="a",
+                        att_name="class",
+                        att_value="day",
+                        target_element="href",
+                    )
+                )
+            ],
+        )
 
-        if self.meal:
-            payload.setdefault(self.url_prefix_meal, self.meal)
-
-        if self.ingredients:
-            payload.setdefault(
-                self.url_prefix_ingredients, ",".join(self.ingredients)
+        recipe_url = scraper.get().get("Recipe")[0]
+        if not recipe_url:
+            raise FetchingError(
+                "No recipe found with your criteria. "
+                "Maybe try removing or changing your filters to broaden your search?"
             )
 
-        if self.url_page_number != 0:
-            payload.setdefault(self.url_prefix_page, self.url_page_number)
+        return recipe_url
 
-        return payload
+    def _scrape_recipe(self) -> RecipeInformation:
+        """Scrape recipe information from its URL"""
+        scraper = self._setup_scraper_recipe()
+        results = scraper.get()
+
+        try:
+            recipe_title = results["Title"]
+            recipe_ingredients = results["Ingredients & Preparation"][0]
+            recipe_preparation = results["Ingredients & Preparation"][1]
+        except KeyError or IndexError:
+            raise FetchingError("Recipe format incorrect. Please try again")
+        else:
+            return RecipeInformation(
+                title=recipe_title,
+                ingredients=recipe_ingredients,
+                preparation=recipe_preparation,
+            )
+
+    def _setup_scraper_recipe(self) -> Scraper:
+        target_title = HtmlSearchTarget(
+            name="Title",
+            tag="h1",
+            att_name="class",
+            att_value="red",
+        )
+        target_ings_and_prep = HtmlSearchTarget(
+            name="Ingredients & Preparation",
+            tag="p",
+            att_name="style",
+            att_value="padding-left: 30px",
+        )
+
+        search_terms_title = ScraperSearchTerms(target=target_title)
+        search_terms_ings_and_prep = ScraperSearchTerms(
+            target=target_ings_and_prep, return_multiple=True
+        )
+
+        scraper = Scraper(
+            url=self.recipe_url,
+            search_terms=[
+                search_terms_title,
+                search_terms_ings_and_prep,
+            ],
+        )
+
+        return scraper
