@@ -1,9 +1,8 @@
-from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
+
 from bs4 import BeautifulSoup
 import requests
-
-import bs4
 
 
 ERROR_MESSAGE: Dict[str, List[str]] = {
@@ -41,7 +40,6 @@ class Scraper:
 
     url: str
     search_terms: List[ScraperSearchTerms]
-    # _http_response: Optional[requests.Response] = None
 
     def get(self) -> Dict[str, List[str]]:
         """Return found data as requested by search parameters"""

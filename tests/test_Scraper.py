@@ -4,7 +4,12 @@ from typing import List, Dict
 import pytest
 import requests
 
-from recipys.Scraper import HtmlSearchTarget, Scraper, ScraperSearchTerms
+from recipys.Scraper import (
+    HtmlSearchTarget,
+    Scraper,
+    ScraperSearchTerms,
+    ERROR_MESSAGE,
+)
 
 
 HTML_PAGE: str = """\
@@ -127,3 +132,34 @@ def test_parse_no_hits():
     )
     result = parse_scraper_from_target(target, return_multiple=True)
     assert result == {"Styles": []}
+
+
+def test_get():
+    scraper = Scraper(
+        url="https://www.google.com",
+        search_terms=[
+            ScraperSearchTerms(
+                target=HtmlSearchTarget(
+                    name="First link", tag="a", target_element="href"
+                )
+            )
+        ],
+    )
+    result = scraper.get()
+    assert len(result["First link"]) == 1
+    assert "https://" in result["First link"][0]
+
+
+def test_get_with_error():
+    scraper = Scraper(
+        url="https://www.google.com/not_a_valid_route",
+        search_terms=[
+            ScraperSearchTerms(
+                target=HtmlSearchTarget(
+                    name="First link", tag="a", target_element="href"
+                )
+            )
+        ],
+    )
+    result = scraper.get()
+    assert result == ERROR_MESSAGE
