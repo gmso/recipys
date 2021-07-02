@@ -1,28 +1,21 @@
 from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
 import requests
 
 
+@dataclass
 class RecipeFetcher:
     """
     Fetches recipes from the web
     """
-
-    def __init__(self) -> None:
-        """
-        Initialize instance variables
-        """
-        self.url_base: str = (
-            "http://www.recipepuppy.com/api/"
-            # ALTERNATIVE: www.recipe-free.com
-        )
-        self.url_prefix_meal: str = "q"
-        self.url_prefix_ingredients: str = "i"
-        self.url_prefix_page: str = "p"
-        self.url_page_number: int = 1
-        self.whitelist_targets: List[str] = ["recipeezaar"]
-        self.meal: Optional[str] = None
-        self.ingredients: Optional[List[str]] = None
-        self.recipe_found: bool = False
+    url_base: str = (
+        "https://www.recipe-free.com/recipe"
+    )
+    url_suffix: str = "search"
+    url_page_number: int = 1
+    meal: Optional[str] = None
+    ingredients: Optional[List[str]] = None
+    recipe_found: bool = False
 
     def fetch_recipe(
         self, meal: Optional[str], ingredients: Optional[List[str]]

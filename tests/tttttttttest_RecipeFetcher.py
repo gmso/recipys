@@ -7,12 +7,12 @@ from recipys.RecipeFetcher import RecipeFetcher
 
 def test_RecipeFetcher_construction():
     fetcher = RecipeFetcher()
-    assert "http://" in fetcher.url_base
+    assert "https://" in fetcher.url_base
     assert len(fetcher.url_prefix_meal) == 1
     assert len(fetcher.url_prefix_ingredients) == 1
-    assert len(fetcher.url_prefix_page) == 1
+    assert not fetcher.url_prefix_page
     assert fetcher.url_page_number == 1
-    assert fetcher.whitelist_targets
+    assert not fetcher.whitelist_targets
 
 
 def test_get_payload():
