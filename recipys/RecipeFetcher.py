@@ -117,6 +117,6 @@ class RecipeFetcher:
 
     def _beautify(self, text: str):
         """Return beautified text from parsed html"""
-        
+
         # Remove multiple spaces and leading and trailing spaces
         return re.sub(" +", " ", text).strip()

@@ -40,7 +40,8 @@ setuptools.setup(
     ),
     python_requires=">3.8.0",
     install_requires=[
-        "beautifulsoup4", "requests" "rich",
+        "beautifulsoup4",
+        "requests" "rich",
     ],
     setup_requires=["pytest-runner", "flake8", "black"],
     tests_require=["pytest", "pytest-cov"],
