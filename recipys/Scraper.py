@@ -65,19 +65,26 @@ class Scraper:
         for search in self.search_terms:
             results: List[str] = []
 
-            limit_hits = None if search.return_multiple else 1
-            attributes = {search.target.att_name, search.target.att_value}
-            if None in attributes:
-                attributes = {}
+            attributes = (
+                {search.target.att_name: search.target.att_value}
+                if (search.target.att_name and search.target.att_name)
+                else None
+            )
 
             soup = BeautifulSoup(self._html, "html.parser")
             tags = soup.find_all(
                 name=search.target.tag,
                 attrs=attributes,
-                limit=limit_hits,
             )
 
             for tag in tags:
+                # Get only exact matches
+                if attributes:
+                    if not tag.get_attribute_list(
+                        f"{search.target.att_name}"
+                    ) == [f"{search.target.att_value}"]:
+                        continue
+
                 if search.target.target_element:
                     # Specific tag of element is searched
                     att_value = tag.attrs.get(
@@ -88,6 +95,10 @@ class Scraper:
                 else:
                     # Inner HTML is searched
                     results.append(tag.text)
+
+                # Break if we only need one result
+                if not search.return_multiple:
+                    break
 
             parsed_results.setdefault(search.target.name, results)
 

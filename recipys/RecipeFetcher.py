@@ -1,5 +1,5 @@
-from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+import re
 
 from recipys.types import RecipeConstraints, RecipeInformation, FetchingError
 from recipys.Scraper import (
@@ -22,13 +22,20 @@ class RecipeFetcher:
 
     def _get_url_recipe(self) -> str:
         """Get URL for HTTP GET request"""
-        query: str
-        if self.recipe_constraints.meal:
-            query += self.recipe_constraints.meal + "-"
-        if self.recipe_constraints.ingredients:
-            query += "-".join(self.recipe_constraints.ingredients)
+        url_base: str = "https://www.recipe-free.com/recipe/"
+        url_suffix: str = "/1/search"
+        ings = (
+            self.recipe_constraints.ingredients
+            if self.recipe_constraints.ingredients
+            else [None]
+        )
+        query = [self.recipe_constraints.meal] + ings
+        clean_query = [e for e in query if e]
 
-        return "https://www.recipe-free.com/recipe/" + query + "/1/search"
+        if clean_query:
+            return url_base + "-".join(clean_query) + url_suffix
+        else:
+            return "https://www.recipe-free.com/best-recipes/1"
 
     def _scrape_recipe_url(self) -> str:
         """Scrape url of recipe according to search constraints"""
@@ -62,9 +69,13 @@ class RecipeFetcher:
         results = scraper.get()
 
         try:
-            recipe_title = results["Title"]
-            recipe_ingredients = results["Ingredients & Preparation"][0]
-            recipe_preparation = results["Ingredients & Preparation"][1]
+            recipe_title = self._beautify(results["Title"][0])
+            recipe_ingredients = self._beautify(
+                results["Ingredients & Preparation"][0]
+            )
+            recipe_preparation = self._beautify(
+                results["Ingredients & Preparation"][1]
+            )
         except KeyError or IndexError:
             raise FetchingError("Recipe format incorrect. Please try again")
         else:
@@ -75,6 +86,7 @@ class RecipeFetcher:
             )
 
     def _setup_scraper_recipe(self) -> Scraper:
+        """Setup Scraper object to be used scraping recipe from its page"""
         target_title = HtmlSearchTarget(
             name="Title",
             tag="h1",
@@ -102,3 +114,9 @@ class RecipeFetcher:
         )
 
         return scraper
+
+    def _beautify(self, text: str):
+        """Return beautified text from parsed html"""
+        
+        # Remove multiple spaces and leading and trailing spaces
+        return re.sub(" +", " ", text).strip()
