@@ -20,7 +20,9 @@ HTML_EMTPY: str = """\
 HTML_RECIPE_LIST: str = """\
 <div class="recipe_row">
     <div class="tile">
-        <a class="day" title="Savory breakfast dish~ bacon~ eggs  cheese" href="https://www.recipe-free.com/recipes/savory-breakfast-dish-bacon-eggs-cheese/83514">
+        <a class="day" title="Savory breakfast dish~ bacon~ eggs  cheese" \
+            href="https://www.recipe-free.com/recipes/savory-breakfast-dish\
+                -bacon-eggs-cheese/83514">
             Savory breakfast dish~ bacon~ eggs  cheese
         </a>
     </div>
@@ -35,15 +37,15 @@ def test_RecipeFetcher_construction():
 
     fetcher = RecipeFetcher(CONSTRAINTS_MEAL)
     assert fetcher.recipe_constraints.meal == "lunch"
-    assert fetcher.recipe_constraints.ingredients == None
+    assert fetcher.recipe_constraints.ingredients is None
 
     fetcher = RecipeFetcher(CONSTRAINTS_INGS)
-    assert fetcher.recipe_constraints.meal == None
+    assert fetcher.recipe_constraints.meal is None
     assert fetcher.recipe_constraints.ingredients == ["peas"]
 
     fetcher = RecipeFetcher(CONSTRAINTS_NONE)
-    assert fetcher.recipe_constraints.meal == None
-    assert fetcher.recipe_constraints.ingredients == None
+    assert fetcher.recipe_constraints.meal is None
+    assert fetcher.recipe_constraints.ingredients is None
 
 
 def test_get_url_recipe():
@@ -72,13 +74,13 @@ def test_scrape_recipe_url():
     sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
     fetcher = RecipeFetcher(CONSTRAINTS_ALL)
     url = fetcher._scrape_recipe_url()
-    assert (
-        url
-        == "https://www.recipe-free.com/recipes/savory-breakfast-dish-bacon-eggs-cheese/83514"
+    assert url == (
+        "https://www.recipe-free.com/recipes/"
+        "savory-breakfast-dish-bacon-eggs-cheese/83514"
     )
 
     with patch("recipys.Scraper.Scraper.get") as _get:
-        _get.return_value = {"Recipe": [None]}
+        _get.return_value = {"Recipe": []}
         with pytest.raises(FetchingError):
             url = fetcher._scrape_recipe_url()
 
@@ -86,19 +88,21 @@ def test_scrape_recipe_url():
 def test_scrape_recipe():
     sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
     fetcher = RecipeFetcher(CONSTRAINTS_ALL)
-    fetcher.recipe_url = "https://www.recipe-free.com/recipes/savory-breakfast-dish-bacon-eggs-cheese/83514"
+    fetcher.recipe_url = (
+        "https://www.recipe-free.com/recipes/"
+        "savory-breakfast-dish-bacon-eggs-cheese/83514"
+    )
     recipe = fetcher._scrape_recipe()
     assert recipe.title == "Savory breakfast dish~ bacon~ eggs cheese"
-    assert (
-        recipe.ingredients
-        == "See below ingredients and instructions of the recipe"
+    assert recipe.ingredients == (
+        "See below ingredients and instructions of the recipe"
     )
     assert "1 1/2 c LIGHT CREAM" in recipe.preparation
 
     with patch("recipys.Scraper.Scraper.get") as _get:
-        _get.return_value = {"Recipe": [None]}
+        _get.return_value = {"Recipe": []}
         with pytest.raises(FetchingError):
-            url = fetcher._scrape_recipe()
+            fetcher._scrape_recipe()
 
 
 def test_fetch_recipe():
@@ -106,9 +110,8 @@ def test_fetch_recipe():
     fetcher = RecipeFetcher(CONSTRAINTS_ALL)
     recipe = fetcher.fetch()
     assert recipe.title == "Savory breakfast dish~ bacon~ eggs cheese"
-    assert (
-        recipe.ingredients
-        == "See below ingredients and instructions of the recipe"
+    assert recipe.ingredients == (
+        "See below ingredients and instructions of the recipe"
     )
     assert "1 1/2 c LIGHT CREAM" in recipe.preparation
 
@@ -125,3 +128,11 @@ def test_fetch_recipe_with_error():
         recipe = fetcher.fetch()
 
         assert recipe.error_message
+
+
+def test_scrape_recipe_url_case_1():
+    sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
+    fetcher = RecipeFetcher(RecipeConstraints("dinner", ["broccoli"]))
+
+    with pytest.raises(FetchingError):
+        fetcher._scrape_recipe_url()

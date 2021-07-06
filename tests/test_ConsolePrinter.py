@@ -18,8 +18,8 @@ def test_ConsolePrinter(capsys):
 
     captured = capsys.readouterr()
     assert recipe.title in captured.out
-    assert recipe.ingredients in captured.out
-    assert recipe.preparation in captured.out
+    assert "Yerba mate" in captured.out
+    assert "Wash mate with water" in captured.out
 
 
 def test_ConsolePrinter_with_error(capsys):

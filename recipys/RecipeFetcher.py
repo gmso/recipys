@@ -61,14 +61,15 @@ class RecipeFetcher:
             ],
         )
 
-        recipe_url = scraper.get().get("Recipe")[0]
+        recipe_url = scraper.get().get("Recipe")
         if not recipe_url:
             raise FetchingError(
                 "No recipe found with your criteria. "
-                "Maybe try removing or changing your filters to broaden your search?"
+                "Maybe try removing or changing your filters "
+                "to broaden your search? Using only ingredients could help!"
             )
 
-        return recipe_url
+        return recipe_url[0]
 
     def _scrape_recipe(self) -> RecipeInformation:
         """Scrape recipe information from its URL"""
