@@ -1,6 +1,7 @@
-Tests | Code coverage | PyPI package CD | Latest version
-:----: | :----: | :----: | :----: | 
-[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml) | [![codecov](https://codecov.io/gh/gmso/recipys/branch/main/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys) | [![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml) | TBD
+Tests | Code coverage | PyPI package CD | Latest version | Style
+:----: | :----: | :----: | :----: | :----:
+[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml) | [![codecov](https://codecov.io/gh/gmso/recipys/branch/main/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys) | [![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml) | [![PyPI version](https://badge.fury.io/py/recipys.svg)](https://badge.fury.io/py/recipys) | [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 
 # 🍲 Recipys 🍲
@@ -20,7 +21,7 @@ Preferably, install in [virtual environment](https://docs.python.org/3/library/v
 ## How to Use
 Run the following command to get a random recipe:
 ```
-recipys random
+recipys
 ```
 
 To filter per meal type, choose one of the following arguments: `breakfast`, `lunch`, `dinner`, `dessert`. The result will be random but narrowed to your filter. For example:
