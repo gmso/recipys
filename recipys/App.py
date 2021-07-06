@@ -1,8 +1,8 @@
-# import sys
+import sys
+from recipys.ArgParser import ArgParser
+from recipys.ConsolePrinter import ConsolePrinter
+from recipys.RecipeFetcher import RecipeFetcher
 from recipys.request_wait import wait_for_green_light
-
-# from recipys.ArgParser import ArgParser
-# from recipys.RecipeFetcher import RecipeFetcher
 
 
 def main():
@@ -12,11 +12,11 @@ def main():
 
     wait_for_green_light()
 
-    # command = ArgParser(sys.argv).parse()
+    recipe_constraints = ArgParser(sys.argv).parse()
 
-    # ToDo: Pass arguments to scraper, which returns search results
+    recipe = RecipeFetcher(recipe_constraints).fetch()
 
-    # ToDo: Pass search results to printer using rich
+    ConsolePrinter(recipe).print_recipe()
 
 
 if __name__ == "__main__":

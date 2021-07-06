@@ -10,9 +10,10 @@ class RecipeConstraints:
 
 @dataclass
 class RecipeInformation:
-    title: str
-    ingredients: str
-    preparation: str
+    title: str = ""
+    ingredients: str = ""
+    preparation: str = ""
+    error_message: Optional[str] = None
 
 
 @dataclass

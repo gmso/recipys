@@ -1,0 +1,31 @@
+from recipys.types import RecipeInformation
+from recipys.ConsolePrinter import ConsolePrinter
+
+
+def test_ConsolePrinter(capsys):
+    recipe = RecipeInformation(
+        title="Mate",
+        ingredients=("Yerba mate\n" "Water"),
+        preparation=(
+            "Pour Yerba into Mate\n"
+            "Wash mate with water a few times\n"
+            "Pour warm water into mate\n"
+            "Enjoy!"
+        ),
+    )
+
+    ConsolePrinter(recipe).print_recipe()
+
+    captured = capsys.readouterr()
+    assert recipe.title in captured.out
+    assert recipe.ingredients in captured.out
+    assert recipe.preparation in captured.out
+
+
+def test_ConsolePrinter_with_error(capsys):
+    recipe = RecipeInformation(error_message="An error ocurred!")
+
+    ConsolePrinter(recipe).print_recipe()
+
+    captured = capsys.readouterr()
+    assert recipe.error_message in captured.out

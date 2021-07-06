@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import re
+from time import sleep
 
 from recipys.types import RecipeConstraints, RecipeInformation, FetchingError
 from recipys.Scraper import (
@@ -7,6 +8,7 @@ from recipys.Scraper import (
     ScraperSearchTerms,
     HtmlSearchTarget,
 )
+from recipys.constants import WAIT_BETWEEN_PINGS
 
 
 @dataclass
@@ -15,10 +17,15 @@ class RecipeFetcher:
 
     recipe_constraints: RecipeConstraints
 
-    def fetch_recipe(self) -> RecipeInformation:
+    def fetch(self) -> RecipeInformation:
         """Fetches recipe according to user input"""
-        self.recipe_url = self._scrape_recipe_url()
-        return self._scrape_recipe()
+        try:
+            self.recipe_url = self._scrape_recipe_url()
+            sleep(WAIT_BETWEEN_PINGS)
+            recipe = self._scrape_recipe()
+            return recipe
+        except FetchingError as e:
+            return RecipeInformation(error_message=e.message)
 
     def _get_url_recipe(self) -> str:
         """Get URL for HTTP GET request"""

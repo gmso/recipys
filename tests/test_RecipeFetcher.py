@@ -99,3 +99,29 @@ def test_scrape_recipe():
         _get.return_value = {"Recipe": [None]}
         with pytest.raises(FetchingError):
             url = fetcher._scrape_recipe()
+
+
+def test_fetch_recipe():
+    sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
+    fetcher = RecipeFetcher(CONSTRAINTS_ALL)
+    recipe = fetcher.fetch()
+    assert recipe.title == "Savory breakfast dish~ bacon~ eggs cheese"
+    assert (
+        recipe.ingredients
+        == "See below ingredients and instructions of the recipe"
+    )
+    assert "1 1/2 c LIGHT CREAM" in recipe.preparation
+
+
+def test_fetch_recipe_with_error():
+    with patch("recipys.RecipeFetcher.RecipeFetcher._scrape_recipe_url") as p:
+        fetcher = RecipeFetcher(CONSTRAINTS_ALL)
+
+        # Cause function to raise Exception
+        def exception_raiser():
+            raise FetchingError
+
+        p.return_value = "https://www.google.com/not_a_valid_route"
+        recipe = fetcher.fetch()
+
+        assert recipe.error_message
