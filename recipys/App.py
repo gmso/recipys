@@ -6,9 +6,7 @@ from recipys.request_wait import wait_for_green_light
 
 
 def main():
-    """
-    Main entry point of app.
-    """
+    """Main entry point of app"""
 
     wait_for_green_light()
 
@@ -20,4 +18,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover

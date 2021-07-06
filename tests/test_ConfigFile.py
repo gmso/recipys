@@ -1,5 +1,8 @@
 import time
 from pathlib import Path
+
+import pytest
+
 from recipys.ConfigFile import ConfigFile
 from utility_fixtures import config_file_cleanup
 
@@ -119,3 +122,15 @@ def test_update_time_last_request(config_file_cleanup):
     time.sleep(0.1)
     config_file.update_time_last_request()
     assert 0.2 < time.time() - timestamp_initial
+
+
+def test_last_request_tampered_in_json_file():
+    config_file = ConfigFile()
+
+    config_file.last_request = time.time() - 1000
+    last_request_in_config_file = {"last_request": time.time()}
+
+    with pytest.raises(KeyError):
+        config_file._get_last_request_from_json_file(
+            last_request_in_config_file
+        )

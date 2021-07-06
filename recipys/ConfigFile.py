@@ -5,14 +5,11 @@ from typing import Dict
 
 
 class ConfigFile:
-    """
-    Handles reading and writing of .json config file
-    """
+    """Handles reading and writing of .json config file"""
 
     def __init__(self) -> None:
-        """
-        Initialize instance variables
-        """
+        """Initialize instance variables"""
+
         self.file_name: str = "config.json"
         self.user_agent: str = (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) "
@@ -33,25 +30,17 @@ class ConfigFile:
         self.last_request: float = time.time()
 
     def get_delta_last_request(self) -> float:
-        """
-        Time difference between now and last request (saved in config file)
+        """Return seconds since last request (saved in config file)"""
 
-        Returns:
-            - float: Seconds between current time and last request
-        """
         self._read_config_file()
         return time.time() - self.last_request
 
     def update_time_last_request(self) -> None:
-        """
-        Update timestamp of last request, both locally and in config file
-        """
+        """Update timestamp of last request, both local and in config file"""
         self._create_config_file()
 
     def _read_config_file(self) -> None:
-        """
-        Read config file and update instance variables
-        """
+        """Read config file and update instance variables"""
         try:
             with open(self.file_name, "r") as file:
                 self._update_from_file(file)
@@ -77,12 +66,10 @@ class ConfigFile:
             raise OSError
 
     def _create_config_file(self) -> None:
-        """
-        Create the config file anew using default values
-        """
+        """Create the config file anew using default values"""
         new_config_file = ConfigFile()
         self.headers = new_config_file.headers
-        self.last_request = new_config_file.last_request
+        self.last_request = new_config_file.last_request - 100
         dict_for_json_file: Dict[str, str] = {
             "headers": str(self.headers),
             "last_request": str(self.last_request),
