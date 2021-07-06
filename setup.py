@@ -15,6 +15,7 @@ with open("recipys/__init__.py", "rb") as f:
         )
     )
 
+with open("recipys/__init__.py", "rb") as f:
     _version_re = re.compile(r"__version__\s+=\s+(.*)")
     version = str(
         ast.literal_eval(_version_re.search(f.read().decode("utf-8")).group(1))
