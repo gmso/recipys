@@ -1,9 +1,9 @@
-from recipys.types import RecipeInformation
+from recipys.types import Printable
 from recipys.ConsolePrinter import ConsolePrinter
 
 
 def test_ConsolePrinter(capsys):
-    recipe = RecipeInformation(
+    recipe = Printable(
         title="Mate",
         ingredients=("Yerba mate\n" "Water"),
         preparation=(
@@ -23,7 +23,7 @@ def test_ConsolePrinter(capsys):
 
 
 def test_ConsolePrinter_with_error(capsys):
-    recipe = RecipeInformation(error_message="An error ocurred!")
+    recipe = Printable(error_message="An error ocurred!")
 
     ConsolePrinter(recipe).print_recipe()
 

@@ -1,7 +1,10 @@
 import re
 from utility_randoms import random_string
 
+import pytest
+
 from recipys.ArgParser import ArgParser
+from recipys.types import PrintInterrupt
 
 
 def test_ArgParser_construction():
@@ -35,18 +38,15 @@ def test_meals_valid():
 
 
 def test_meals_invalid():
-    constraints = ArgParser(["recipys", "desssert"]).parse()
-    assert not constraints.meal
-    assert not constraints.ingredients
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "desssert"]).parse()
 
-    constraints = ArgParser(["recipys", "a", "lunch"]).parse()
-    assert not constraints.meal
-    assert not constraints.ingredients
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "a", "lunch"]).parse()
 
     for w in range(10):
-        constraints = ArgParser(["recipys", random_string()]).parse()
-        assert not constraints.meal
-        assert not constraints.ingredients
+        with pytest.raises(PrintInterrupt):
+            ArgParser(["recipys", random_string()]).parse()
 
 
 def test_ingredients_valid():
@@ -76,24 +76,20 @@ def test_ingredients_valid():
 
 def test_ingredients_invalid():
     # "with" missing
-    constraints = ArgParser(["recipys", "banana"]).parse()
-    assert not constraints.meal
-    assert not constraints.ingredients
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "banana"]).parse()
 
     # "with" misplaced
-    constraints = ArgParser(["recipys", "chocolate", "with"]).parse()
-    assert not constraints.meal
-    assert not constraints.ingredients
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "chocolate", "with"]).parse()
 
     # invalid ingredient
-    constraints = ArgParser(["recipys", "with", "..."]).parse()
-    assert not constraints.meal
-    assert not constraints.ingredients
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "with", "..."]).parse()
 
     # one valid ingredient, invalid ingredients ignored
-    constraints = ArgParser(["recipys", "with", "...", "???", "apple"]).parse()
-    assert not constraints.meal
-    assert constraints.ingredients == ["apple"]
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "with", "...", "???", "apple"]).parse()
 
 
 def test_mixed_valid():

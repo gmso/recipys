@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import re
 from time import sleep
 
-from recipys.types import RecipeConstraints, RecipeInformation, FetchingError
+from recipys.types import RecipeConstraints, Printable, FetchingError
 from recipys.Scraper import (
     Scraper,
     ScraperSearchTerms,
@@ -17,7 +17,7 @@ class RecipeFetcher:
 
     recipe_constraints: RecipeConstraints
 
-    def fetch(self) -> RecipeInformation:
+    def fetch(self) -> Printable:
         """Fetches recipe according to user input"""
         try:
             self.recipe_url = self._scrape_recipe_url()
@@ -25,7 +25,7 @@ class RecipeFetcher:
             recipe = self._scrape_recipe()
             return recipe
         except FetchingError as e:
-            return RecipeInformation(error_message=e.message)
+            return Printable(error_message=e.message)
 
     def _get_url_recipe(self) -> str:
         """Get URL for HTTP GET request"""
@@ -71,7 +71,7 @@ class RecipeFetcher:
 
         return recipe_url[0]
 
-    def _scrape_recipe(self) -> RecipeInformation:
+    def _scrape_recipe(self) -> Printable:
         """Scrape recipe information from its URL"""
         scraper = self._setup_scraper_recipe()
         results = scraper.get()
@@ -87,7 +87,7 @@ class RecipeFetcher:
         except KeyError or IndexError:
             raise FetchingError("Recipe format incorrect. Please try again")
         else:
-            return RecipeInformation(
+            return Printable(
                 title=recipe_title,
                 ingredients=recipe_ingredients,
                 preparation=recipe_preparation,

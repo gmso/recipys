@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import re
 from typing import List, Tuple, Optional
 
-from recipys.types import RecipeConstraints
+from recipys.types import RecipeConstraints, PrintInterrupt, Printable
+from recipys.constants import MESSAGE_INVALID_ARGS, MESSAGE_INVALID_INGREDIENT
 
 
 @dataclass
@@ -24,23 +25,36 @@ class ArgParser:
         return RecipeConstraints(self.meal, self.ingredients)
 
     def _get_meal(self) -> Optional[str]:
-        """Gets meal type from command line argument"""
+        """Gets meal type from command line argument
+
+        Raises:
+            - PrintInterrupt: If error detected in parsed meal
+        """
         if len(self.args) > 1:
             for accepted_meal in self.accepted_meals:
                 if self.args[1].lower() == accepted_meal:
                     return accepted_meal
+
+            # No meal found: check if error
+            if "with" != self.args[1]:
+                raise PrintInterrupt(
+                    Printable(error_message=MESSAGE_INVALID_ARGS)
+                )
         return None
 
     def _get_ingredients(self) -> Optional[List[str]]:
-        """Gets meal type from command line argument"""
-        args = [a.lower() for a in self.args]
-        if "with" not in args:
-            return None
+        """Gets ingredients from command line argument
 
+        Raises:
+            - PrintInterrupt: If error detected in parsed ingredients"""
+        args = [a.lower() for a in self.args]
         start: int = 2 if self.meal else 1
 
-        if "with" != args[start]:
-            return None
+        if len(args) >= start + 1:
+            if "with" != args[start]:
+                raise PrintInterrupt(
+                    Printable(error_message=MESSAGE_INVALID_ARGS)
+                )
 
         ingredients: List[str] = []
         for _, arg in enumerate(args[start + 1 : :]):
@@ -48,6 +62,10 @@ class ArgParser:
             word = "".join(m)
             if word:
                 ingredients.append(word)
+            else:
+                raise PrintInterrupt(
+                    Printable(error_message=MESSAGE_INVALID_INGREDIENT)
+                )
 
         if not ingredients:
             return None
