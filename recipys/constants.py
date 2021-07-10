@@ -19,20 +19,26 @@ COLOR_INFORMATION: str = "deep_sky_blue1"
 
 
 # Standard messages
-MESSAGE_INVALID_ARGS: str = """\
+MESSAGE_INVALID_ARGS: str = f"""\
 It seems the input arguments are invalid (⌣́_⌣̀)
 
-You can only use [bold]one[/not bold] of the accepted meals :
-'breakfast', 'lunch', 'dinner' or 'desert'
+You can only use [bold {COLOR_ERROR}]one[/bold {COLOR_ERROR}] \
+of the accepted meals :
+[bold {COLOR_ERROR}]breakfast[/bold {COLOR_ERROR}], \
+[bold {COLOR_ERROR}]lunch[/bold {COLOR_ERROR}], \
+[bold {COLOR_ERROR}]dinner[/bold {COLOR_ERROR}] or \
+[bold {COLOR_ERROR}]desert[/bold {COLOR_ERROR}]
 
-Or if you are specifying ingredients, be sure to use the keyword 'with' \
-before the ingredients list
-(like in 'recipys with potato beans')
+Or if you are specifying ingredients, be sure to use the keyword \
+[bold]with[/bold] before the ingredients list
+(for example: \
+[bold {COLOR_INFORMATION}]recipys with potato beans[/bold {COLOR_INFORMATION}])
 """
 
-MESSAGE_INVALID_INGREDIENT: str = """\
+MESSAGE_INVALID_INGREDIENT: str = f"""\
 It seems the input arguments are invalid (⌣́_⌣̀)
 
-Please make sure to specify valid ingredients after the 'with' keyword
+Please make sure to specify valid ingredients after the \
+[bold {COLOR_ERROR}]with[/bold {COLOR_ERROR}]' keyword
 (valid ingredients have at least one letter, not only symbols)
 """
