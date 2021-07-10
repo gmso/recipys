@@ -64,14 +64,16 @@ def test_ingredients_valid():
 
     for w in range(10):
         rand_string = random_string()
-        constraints = ArgParser(["recipys", "with", rand_string]).parse()
         word = "".join(re.findall(r"[a-zA-Z]", rand_string)).lower()
         if word:
+            constraints = ArgParser(["recipys", "with", rand_string]).parse()
             assert not constraints.meal
             assert constraints.ingredients == [word]
         else:
-            assert not constraints.meal
-            assert not constraints.ingredients
+            with pytest.raises(PrintInterrupt):
+                constraints = ArgParser(
+                    ["recipys", "with", rand_string]
+                ).parse()
 
 
 def test_ingredients_invalid():
