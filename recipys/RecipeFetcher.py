@@ -9,7 +9,7 @@ from recipys.Scraper import (
     ScraperSearchTerms,
     HtmlSearchTarget,
 )
-from recipys.constants import WAIT_BETWEEN_PINGS
+from recipys.constants import WAIT_BETWEEN_PINGS, KEY_STRINGS_CUT_FROM_RECIPE
 
 
 @dataclass
@@ -157,11 +157,28 @@ class RecipeFetcher:
 
         return scraper
 
-    def _beautify(self, text: str):
-        """Return beautified text from parsed html"""
+    def _beautify(self, text: str) -> str:
+        """Return beautified text from parsed html
+
+        Args:
+            - text: text to be beautified
+        """
+
+        # Remove metadata if key string found
+        pos_to_cut: int = 0
+        text_lowercase = text.lower()
+        for key in KEY_STRINGS_CUT_FROM_RECIPE:
+            substring_position = text_lowercase.find(key)
+            if substring_position != -1:
+                # Substring found
+                if pos_to_cut == 0:
+                    pos_to_cut = substring_position
+                else:
+                    pos_to_cut = min(pos_to_cut, substring_position)
+        text_without_metadata = text[:pos_to_cut] if pos_to_cut else text
 
         # Remove multiple spaces and leading and trailing spaces
-        return re.sub(" +", " ", text).strip()
+        return re.sub(" +", " ", text_without_metadata).strip()
 
     def _is_current_recipe_page_the_right_one(self, text: str) -> bool:
         """Determine if we are in the right page of recipe listing

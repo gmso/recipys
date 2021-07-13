@@ -5,6 +5,7 @@ import pytest
 
 from recipys.RecipeFetcher import RecipeFetcher
 from recipys.types import RecipeConstraints, FetchingError
+from recipys.constants import KEY_STRINGS_CUT_FROM_RECIPE
 
 
 CONSTRAINTS_ALL = RecipeConstraints("breakfast", ["egg", "cheese"])
@@ -146,3 +147,25 @@ def test_scrape_recipe_url_load_new_page():
         assert str(patched_target_page) in fetcher._url_recipe_list
         assert fetcher._determined_target_page
         assert fetcher._target_page_recipe_list == str(patched_target_page)
+
+
+def test_beautify_recipe():
+    fetcher = RecipeFetcher(CONSTRAINTS_NONE)
+    base_text: str = "This recipe is prepared ...\n and finished!"
+    text_after_match: str = "this should be cut from the recipe"
+
+    for string in KEY_STRINGS_CUT_FROM_RECIPE:
+        beautified_text = fetcher._beautify(
+            base_text + string + text_after_match
+        )
+        assert beautified_text == base_text
+
+    # Now with several keys: the first one determines the cut
+    beautified_text = fetcher._beautify(
+        base_text
+        + KEY_STRINGS_CUT_FROM_RECIPE[1].upper()  # should be case insensitive
+        + "text being cut"
+        + KEY_STRINGS_CUT_FROM_RECIPE[0]
+        + text_after_match
+    )
+    assert beautified_text == base_text

@@ -3,6 +3,9 @@ Global constants of application
 """
 
 # Real time delay between two executions of application (ethical scraping)
+from typing import List
+
+
 MIN_SECONDS_REQUEST: float = 10.0
 
 
@@ -42,3 +45,12 @@ Please make sure to specify valid ingredients after the \
 [bold {COLOR_ERROR}]with[/bold {COLOR_ERROR}]' keyword
 (valid ingredients have at least one letter, not only symbols)
 """
+
+
+# Key strings to cut recipe metadata, as starting point
+KEY_STRINGS_CUT_FROM_RECIPE: List[str] = [
+    "source: ",
+    "submitted by: ",
+    "from: ",
+    "recipe by: "
+]
