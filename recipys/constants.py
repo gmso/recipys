@@ -50,7 +50,7 @@ Please make sure to specify valid ingredients after the \
 # Key strings to cut recipe metadata, as starting point
 KEY_STRINGS_CUT_FROM_RECIPE: List[str] = [
     "source: ",
-    "submitted by: ",
+    "submitted by",
     "from: ",
-    "recipe by: ",
+    "recipe by",
 ]

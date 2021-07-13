@@ -169,3 +169,13 @@ def test_beautify_recipe():
         + text_after_match
     )
     assert beautified_text == base_text
+
+
+def test_beautify_real_recipe():
+    sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
+    fetcher = RecipeFetcher(RecipeConstraints("breakfast", ["salad"]))
+    recipe = fetcher.fetch()
+    assert recipe.title
+    assert recipe.ingredients
+    assert recipe.preparation
+    assert not "recipe by: " in recipe.preparation.lower()
