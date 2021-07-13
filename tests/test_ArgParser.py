@@ -93,6 +93,10 @@ def test_ingredients_invalid():
     with pytest.raises(PrintInterrupt):
         ArgParser(["recipys", "with", "...", "???", "apple"]).parse()
 
+    # valid meal but missing with
+    with pytest.raises(PrintInterrupt):
+        ArgParser(["recipys", "dessert", "chocolate"]).parse()
+
 
 def test_mixed_valid():
     constraints = ArgParser(["recipys", "breakfast", "with", "oats"]).parse()

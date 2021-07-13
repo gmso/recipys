@@ -20,7 +20,7 @@ COLOR_INFORMATION: str = "deep_sky_blue1"
 
 # Standard messages
 MESSAGE_INVALID_ARGS: str = f"""\
-It seems the input arguments are invalid (⌣́_⌣̀)
+It seems the input arguments are invalid
 
 You can only use [bold {COLOR_ERROR}]one[/bold {COLOR_ERROR}] \
 of the accepted meals :
@@ -30,13 +30,13 @@ of the accepted meals :
 [bold {COLOR_ERROR}]desert[/bold {COLOR_ERROR}]
 
 Or if you are specifying ingredients, be sure to use the keyword \
-[bold]with[/bold] before the ingredients list
-(for example: \
-[bold {COLOR_INFORMATION}]recipys with potato beans[/bold {COLOR_INFORMATION}])
+[bold {COLOR_INFORMATION}]with[/bold {COLOR_INFORMATION}] before \
+the ingredients list (for example: [bold {COLOR_INFORMATION}]\
+recipys with potato beans[/bold {COLOR_INFORMATION}])
 """
 
 MESSAGE_INVALID_INGREDIENT: str = f"""\
-It seems the input arguments are invalid (⌣́_⌣̀)
+It seems the input arguments are invalid
 
 Please make sure to specify valid ingredients after the \
 [bold {COLOR_ERROR}]with[/bold {COLOR_ERROR}]' keyword

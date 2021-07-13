@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import re
 from time import sleep
+import random
 
 from recipys.types import RecipeConstraints, Printable, FetchingError
 from recipys.Scraper import (
@@ -27,10 +28,14 @@ class RecipeFetcher:
         except FetchingError as e:
             return Printable(error_message=e.message)
 
-    def _get_url_recipe(self) -> str:
+    def _create_url_recipe_search(self) -> str:
         """Get URL for HTTP GET request"""
         url_base: str = "https://www.recipe-free.com/recipe/"
-        url_suffix: str = "/1/search"
+
+        if not hasattr(self, "_target_page_recipe_list"):
+            self._target_page_recipe_list: str = "1"
+        url_suffix: str = f"/{self._target_page_recipe_list}/search"
+
         ings = (
             self.recipe_constraints.ingredients
             if self.recipe_constraints.ingredients
@@ -42,34 +47,63 @@ class RecipeFetcher:
         if clean_query:
             return url_base + "-".join(clean_query) + url_suffix
         else:
-            return "https://www.recipe-free.com/best-recipes/1"
+            return (
+                "https://www.recipe-free.com/recipe/best/"
+                f"{self._target_page_recipe_list}"
+            )
+
+    def _create_search_terms_recipe_search(self) -> None:
+        """Creates search terms used to search for recipe url"""
+        if not hasattr(self, "terms_recipe_list"):
+            self.terms_recipe_list = ScraperSearchTerms(
+                target=HtmlSearchTarget(
+                    name="Recipe",
+                    tag="a",
+                    att_name="class",
+                    att_value="day",
+                    target_element="href",
+                ),
+                return_multiple=True,
+            )
+        if not hasattr(self, "terms_pages_with_recipes"):
+            self.terms_pages_with_recipes = ScraperSearchTerms(
+                target=HtmlSearchTarget(
+                    name="Pages",
+                    tag="span",
+                    att_name="class",
+                    att_value="f12 f12",
+                )
+            )
 
     def _scrape_recipe_url(self) -> str:
         """Scrape url of recipe according to search constraints"""
+        self._create_search_terms_recipe_search()
+        self._url_recipe_list = self._create_url_recipe_search()
+
         scraper = Scraper(
-            url=self._get_url_recipe(),
+            url=self._url_recipe_list,
             search_terms=[
-                ScraperSearchTerms(
-                    target=HtmlSearchTarget(
-                        name="Recipe",
-                        tag="a",
-                        att_name="class",
-                        att_value="day",
-                        target_element="href",
-                    )
-                )
+                self.terms_recipe_list,
+                self.terms_pages_with_recipes,
             ],
         )
+        scraped_data = scraper.get()
 
-        recipe_url = scraper.get().get("Recipe")
-        if not recipe_url:
+        try:
+            pages_text = scraped_data.get("Pages")[0]
+            if not self._is_current_recipe_page_the_right_one(pages_text):
+                sleep(WAIT_BETWEEN_PINGS)
+                return self._scrape_recipe_url()
+
+            recipes_urls = scraped_data.get("Recipe")
+            return random.choice(recipes_urls)
+
+        except IndexError:
             raise FetchingError(
                 "No recipe found with your criteria. "
                 "Maybe try removing or changing your filters "
                 "to broaden your search? Using only ingredients could help!"
             )
-
-        return recipe_url[0]
 
     def _scrape_recipe(self) -> Printable:
         """Scrape recipe information from its URL"""
@@ -128,3 +162,29 @@ class RecipeFetcher:
 
         # Remove multiple spaces and leading and trailing spaces
         return re.sub(" +", " ", text).strip()
+
+    def _is_current_recipe_page_the_right_one(self, text: str) -> bool:
+        """Determine if we are in the right page of recipe listing
+
+        Args:
+            - text: Inner HTML text of total pages information
+        """
+        if hasattr(self, "_determined_target_page"):
+            return True
+
+        regex = re.compile(r"Results (\d).+?\(de (.*?)\) recipes")
+        m = regex.match(text)
+
+        recipes_per_page: int = 10
+
+        current_page = (int(m.group(1)) // recipes_per_page) + 1
+
+        recipes_total = int(m.group(2).replace(",", ""))
+        pages_total: int = (recipes_total // recipes_per_page) + 1
+
+        target_page: int = random.randint(1, pages_total)
+        self._target_page_recipe_list = str(target_page)
+
+        self._determined_target_page: bool = True
+
+        return target_page == current_page

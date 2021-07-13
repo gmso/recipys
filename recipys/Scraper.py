@@ -80,9 +80,10 @@ class Scraper:
             for tag in tags:
                 # Get only exact matches
                 if attributes:
-                    if not tag.get_attribute_list(
-                        f"{search.target.att_name}"
-                    ) == [f"{search.target.att_value}"]:
+                    found_att_value = " ".join(
+                        tag.get_attribute_list(f"{search.target.att_name}")
+                    )
+                    if not found_att_value == f"{search.target.att_value}":
                         continue
 
                 if search.target.target_element:

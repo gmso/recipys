@@ -40,6 +40,7 @@ class ConsolePrinter:
         subtitle: Optional[str] = None,
         render_group: Optional[RenderGroup] = None,
     ) -> None:
+        """Generic print message"""
         if not render_group:
             render_group = RenderGroup(
                 f"[{color}]{subtitle}",
@@ -57,6 +58,7 @@ class ConsolePrinter:
         print("\n")
 
     def _make_inner_panel(self, text: str, title: str) -> Panel:
+        """Create interior panel for printed recipes"""
         return Panel(
             text,
             title=f"[bold {COLOR_RECIPE_SECONDARY}]" + title,
@@ -80,6 +82,7 @@ class ConsolePrinter:
         )
 
     def _print_error(self) -> None:
+        """Print error message"""
         return self._print_message(
             title="ERROR",
             subtitle="The following error ocurred:",
@@ -88,6 +91,7 @@ class ConsolePrinter:
         )
 
     def _print_warning(self):
+        """Print warning message"""
         return self._print_message(
             title="Warning",
             subtitle="Heads up!",
@@ -96,6 +100,7 @@ class ConsolePrinter:
         )
 
     def _print_information(self):
+        """Print information message"""
         return self._print_message(
             title=self.recipe.title,
             subtitle="Your requested info:",

@@ -29,3 +29,21 @@ def test_ConsolePrinter_with_error(capsys):
 
     captured = capsys.readouterr()
     assert recipe.error_message in captured.out
+
+
+def test_ConsolePrinter_with_warning(capsys):
+    recipe = Printable(warning_message="Watch out for the following")
+
+    ConsolePrinter(recipe).print_recipe()
+
+    captured = capsys.readouterr()
+    assert recipe.warning_message in captured.out
+
+
+def test_ConsolePrinter_with_info_message(capsys):
+    recipe = Printable(info_message="You may want to know this:")
+
+    ConsolePrinter(recipe).print_recipe()
+
+    captured = capsys.readouterr()
+    assert recipe.info_message in captured.out
