@@ -52,5 +52,5 @@ KEY_STRINGS_CUT_FROM_RECIPE: List[str] = [
     "source: ",
     "submitted by: ",
     "from: ",
-    "recipe by: "
+    "recipe by: ",
 ]
