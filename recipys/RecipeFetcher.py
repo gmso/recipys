@@ -164,21 +164,27 @@ class RecipeFetcher:
             - text: text to be beautified
         """
 
-        # Remove metadata if key string found
-        pos_to_cut: int = 0
-        text_lowercase = text.lower()
-        for key in KEY_STRINGS_CUT_FROM_RECIPE:
-            substring_position = text_lowercase.find(key)
-            if substring_position != -1:
-                # Substring found
-                if pos_to_cut == 0:
-                    pos_to_cut = substring_position
-                else:
-                    pos_to_cut = min(pos_to_cut, substring_position)
-        text_without_metadata = text[:pos_to_cut] if pos_to_cut else text
+        # Remove spaces after line breaks
+        text_beautified = re.sub(r"\n +", r"\n", text)
 
-        # Remove multiple spaces and leading and trailing spaces
-        return re.sub(" +", " ", text_without_metadata).strip()
+        # Remove multiple spaces
+        text_beautified = re.sub(r" +", r" ", text_beautified)
+
+        # Remove metadata if key string found
+        lowered = text_beautified.lower()
+        indexes = [
+            lowered.find(key)
+            for key in KEY_STRINGS_CUT_FROM_RECIPE
+            if lowered.find(key) != -1
+        ]
+        if indexes:
+            # Substring found
+            text_beautified = text_beautified[: min(indexes)]
+
+        # Remove leading and trailing spaces
+        text_beautified = text_beautified.strip()
+
+        return text_beautified
 
     def _is_current_recipe_page_the_right_one(self, text: str) -> bool:
         """Determine if we are in the right page of recipe listing

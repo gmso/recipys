@@ -151,14 +151,15 @@ def test_scrape_recipe_url_load_new_page():
 
 def test_beautify_recipe():
     fetcher = RecipeFetcher(CONSTRAINTS_NONE)
-    base_text: str = "This recipe is prepared ...\n and finished!"
+    base_text: str = "  This   recipe is prepared ...\n and finished!    "
+    expected_text: str = "This recipe is prepared ...\nand finished!"
     text_after_match: str = "this should be cut from the recipe"
 
     for string in KEY_STRINGS_CUT_FROM_RECIPE:
         beautified_text = fetcher._beautify(
             base_text + string + text_after_match
         )
-        assert beautified_text == base_text
+        assert beautified_text == expected_text
 
     # Now with several keys: the first one determines the cut
     beautified_text = fetcher._beautify(
@@ -168,7 +169,8 @@ def test_beautify_recipe():
         + KEY_STRINGS_CUT_FROM_RECIPE[0]
         + text_after_match
     )
-    assert beautified_text == base_text
+
+    assert beautified_text == expected_text
 
 
 def test_beautify_real_recipe():
@@ -178,4 +180,4 @@ def test_beautify_real_recipe():
     assert recipe.title
     assert recipe.ingredients
     assert recipe.preparation
-    assert not "recipe by: " in recipe.preparation.lower()
+    assert "recipe by: " not in recipe.preparation.lower()
