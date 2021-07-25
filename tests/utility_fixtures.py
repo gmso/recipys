@@ -6,6 +6,14 @@ from recipys.ConfigFile import ConfigFile
 @fixture
 def config_file_cleanup():
     file_path = Path(ConfigFile().file_name)
-    file_path.unlink(missing_ok=True)  # delete config file if exists
+    try:
+        file_path.unlink()  # delete config file if exists
+    except FileNotFoundError:
+        pass
+
     yield
-    file_path.unlink()  # delete config file
+
+    try:
+        file_path.unlink()  # delete config file
+    except FileNotFoundError:
+        pass

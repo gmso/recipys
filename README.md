@@ -1,6 +1,6 @@
-Tests | Code coverage | PyPI package CD | Latest version | Style
+Supported Python versions | Tests / CI | Code coverage | Latest version | Style
 :----: | :----: | :----: | :----: | :----:
-[![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml) | [![codecov](https://codecov.io/gh/gmso/recipys/branch/main/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys) | [![pypi package](https://github.com/gmso/recipys/actions/workflows/python-publish.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-publish.yml) | [![PyPI version](https://badge.fury.io/py/recipys.svg)](https://badge.fury.io/py/recipys) | [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Python versions](https://img.shields.io/pypi/pyversions/recipys.svg)](https://img.shields.io/pypi/pyversions/recipys) | [![Tests](https://github.com/gmso/recipys/actions/workflows/python-package.yml/badge.svg)](https://github.com/gmso/recipys/actions/workflows/python-package.yml) | [![codecov](https://codecov.io/gh/gmso/recipys/branch/main/graph/badge.svg?token=JE5VWN9HTN)](https://codecov.io/gh/gmso/recipys) | [![PyPI version](https://badge.fury.io/py/recipys.svg)](https://badge.fury.io/py/recipys) | [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
 

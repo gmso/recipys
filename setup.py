@@ -39,7 +39,7 @@ setuptools.setup(
             f"{app_name}*",
         ]
     ),
-    python_requires=">3.8.0",
+    python_requires=">3.7.0",
     install_requires=[
         "beautifulsoup4",
         "requests",
@@ -49,6 +49,9 @@ setuptools.setup(
     tests_require=["pytest", "pytest-cov"],
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Environment :: Console",
