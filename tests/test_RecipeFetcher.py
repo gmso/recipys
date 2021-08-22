@@ -5,7 +5,10 @@ import pytest
 
 from recipys.RecipeFetcher import RecipeFetcher
 from recipys.types import RecipeConstraints, FetchingError
-from recipys.constants import KEY_STRINGS_CUT_FROM_RECIPE
+from recipys.constants import (
+    KEY_STRINGS_CUT_FROM_RECIPE,
+    KEY_STRINGS_INGREDIENTS_MISSING,
+)
 
 
 CONSTRAINTS_ALL = RecipeConstraints("breakfast", ["egg", "cheese"])
@@ -92,10 +95,10 @@ def test_scrape_recipe():
     )
     recipe = fetcher._scrape_recipe()
     assert recipe.title == "Savory breakfast dish~ bacon~ eggs cheese"
-    assert recipe.ingredients == (
+    assert recipe.ingredients != (
         "See below ingredients and instructions of the recipe"
     )
-    assert "1 1/2 c LIGHT CREAM" in recipe.preparation
+    assert "COMBINE CHEESE, EGGS, BACON" in recipe.preparation
 
     with patch("recipys.Scraper.Scraper.get") as _get:
         _get.return_value = {"Recipe": []}
@@ -181,3 +184,69 @@ def test_beautify_real_recipe():
     assert recipe.ingredients
     assert recipe.preparation
     assert "recipe by: " not in recipe.preparation.lower()
+
+
+def test_extract_ingredients_from_preparation():
+    fetcher = RecipeFetcher(CONSTRAINTS_NONE)
+
+    # Case: ingredients empty and dividing string present
+    initial_preparation: str = (
+        "1.Ingredient\n2.Ingredient\n3.Ingredient"
+        "\n\nPreparation\nPreparation\n"
+    )
+    for inital_ingredients in KEY_STRINGS_INGREDIENTS_MISSING:
+        (
+            ingredients,
+            preparation,
+        ) = fetcher._extract_ingredients_from_preparation(
+            inital_ingredients,
+            initial_preparation,
+        )
+        # Ingredients and preparation changed
+        assert ingredients == "1.Ingredient\n2.Ingredient\n3.Ingredient"
+        assert preparation == "Preparation\nPreparation"
+
+    # Case: ingredients empty/invalid but no dividing string present
+    initial_preparation: str = (
+        "1.Ingredient\n2.Ingredient\n3.Ingredient"
+        "\nPreparation\nPreparation\n"
+    )
+    inital_ingredients: str = KEY_STRINGS_INGREDIENTS_MISSING[0]
+    (
+        ingredients,
+        preparation,
+    ) = fetcher._extract_ingredients_from_preparation(
+        inital_ingredients,
+        initial_preparation,
+    )
+    # Ingredients and preparation DID NOT change
+    assert ingredients == inital_ingredients
+    assert preparation == initial_preparation
+
+    # Case: ingredients valid
+    initial_preparation: str = (
+        "1.Ingredient\n2.Ingredient\n3.Ingredient"
+        "\n\nPreparation\nPreparation\n"
+    )
+    inital_ingredients: str = "1. Lettuce\n2. Tomatoes"
+    (
+        ingredients,
+        preparation,
+    ) = fetcher._extract_ingredients_from_preparation(
+        inital_ingredients,
+        initial_preparation,
+    )
+    # Ingredients and preparation DID NOT change
+    assert ingredients == inital_ingredients
+    assert preparation == initial_preparation
+
+
+def test_extract_ingredients_from_preparation_real_recipe():
+    sleep(1)  # wait to avoid fetching data too quickly (ethical scraping)
+    fetcher = RecipeFetcher(RecipeConstraints("breakfast", ["salad"]))
+    recipe = fetcher.fetch()
+    assert recipe.title
+    assert "See below ingredients" not in recipe.ingredients
+    assert "Cucumbers" in recipe.ingredients
+    assert "Cucumbers" not in recipe.preparation
+    assert "Vegetables" in recipe.preparation

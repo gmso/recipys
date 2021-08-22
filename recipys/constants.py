@@ -57,4 +57,18 @@ KEY_STRINGS_CUT_FROM_RECIPE: List[str] = [
     "created by",
     "historical note",
     "recipe from",
+    "posted on",
+    "posted by",
+    "mm and upload by",
+]
+
+
+# Key strings to detect ingredients are inside preparation
+KEY_STRINGS_INGREDIENTS_MISSING: List[str] = [
+    "See below ingredients",
+]
+
+
+KEY_STRING_DIVIDE_INGREDIENTS_FROM_PREPARATION: List[str] = [
+    "\n\n",
 ]

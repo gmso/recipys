@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import re
 from time import sleep
 import random
+from typing import Tuple
 
 from recipys.types import RecipeConstraints, Printable, FetchingError
 from recipys.Scraper import (
@@ -9,7 +10,12 @@ from recipys.Scraper import (
     ScraperSearchTerms,
     HtmlSearchTarget,
 )
-from recipys.constants import WAIT_BETWEEN_PINGS, KEY_STRINGS_CUT_FROM_RECIPE
+from recipys.constants import (
+    WAIT_BETWEEN_PINGS,
+    KEY_STRINGS_CUT_FROM_RECIPE,
+    KEY_STRINGS_INGREDIENTS_MISSING,
+    KEY_STRING_DIVIDE_INGREDIENTS_FROM_PREPARATION,
+)
 
 
 @dataclass
@@ -118,6 +124,14 @@ class RecipeFetcher:
             recipe_preparation = self._beautify(
                 results["Ingredients & Preparation"][1]
             )
+
+            # Extract ingredients from preparation if needed
+            (
+                recipe_ingredients,
+                recipe_preparation,
+            ) = self._extract_ingredients_from_preparation(
+                recipe_ingredients, recipe_preparation
+            )
         except KeyError or IndexError:
             raise FetchingError("Recipe format incorrect. Please try again")
         else:
@@ -211,3 +225,44 @@ class RecipeFetcher:
         self._determined_target_page: bool = True
 
         return target_page == current_page
+
+    def _extract_ingredients_from_preparation(
+        self, ingredients: str, preparation: str
+    ) -> Tuple[str, str]:
+        """Extract ingredients from preparation, if they are found
+
+        Args:
+            - ingredients: ingredients found for the recipe
+            - preparation: preparation found for the recipe
+
+        Returns:
+            - Tuple of strings (ingredients, preparation)
+        """
+
+        # Search for key strings
+        for key in KEY_STRINGS_INGREDIENTS_MISSING:
+            if key in ingredients:
+                # Ingredients present in preparation
+                break
+        else:
+            # Substring NOT found: return same strings
+            return (ingredients, preparation)
+
+        # Search for dividing key string
+        lowered_preparation = preparation.lower()
+        indexes = [
+            lowered_preparation.find(key)
+            for key in KEY_STRING_DIVIDE_INGREDIENTS_FROM_PREPARATION
+            if lowered_preparation.find(key) != -1
+        ]
+
+        if indexes:
+            # Dividing string found
+            cut: int = min(indexes)
+            return (
+                preparation[:cut].strip(),  # ingredients
+                preparation[cut:].strip(),  # preparation
+            )
+        else:
+            # Dividing NOT found: return same strings
+            return (ingredients, preparation)
