@@ -19,6 +19,8 @@ COLOR_RECIPE_SECONDARY: str = "light_slate_grey"
 COLOR_ERROR: str = "orange_red1"
 COLOR_WARNING: str = "gold1"
 COLOR_INFORMATION: str = "deep_sky_blue1"
+COLOR_HIGHLIGHT_SEARCHED_MEAL: str = "deep_sky_blue1"
+COLOR_HIGHLIGHT_SEARCHED_INGREDIENT: str = "deep_sky_blue1"
 
 
 # Standard messages

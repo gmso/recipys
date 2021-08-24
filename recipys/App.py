@@ -5,7 +5,7 @@ from recipys.ConsolePrinter import ConsolePrinter
 from recipys.ProgressBar import ProgressBar
 from recipys.RecipeFetcher import RecipeFetcher
 from recipys.request_wait import wait_for_green_light
-from recipys.types import PrintInterrupt
+from recipys.types import PrintInterrupt, RecipeConstraints
 
 
 def main():
@@ -21,13 +21,14 @@ def main():
             recipe_constraints = ArgParser(sys.argv).parse()
         except PrintInterrupt as e:
             bar.advance()
+            recipe_constraints = RecipeConstraints(None, None)
             recipe = e.printable
         else:
             bar.advance()
             recipe = RecipeFetcher(recipe_constraints).fetch()
         finally:
             bar.advance()
-            ConsolePrinter(recipe).print_recipe()
+            ConsolePrinter(recipe, recipe_constraints).print_recipe()
 
 
 if __name__ == "__main__":
